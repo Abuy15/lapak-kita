@@ -4,40 +4,51 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Kategori - Lapak Banjarharjo</title>
+    <link rel="icon" type="image/png" href="logo.png">
+    <link rel="apple-touch-icon" href="logo.png">
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#16a34a">
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;900&display=swap');
         body { font-family: 'Inter', sans-serif; }
-        .active-nav { color: #16a34a; } /* Warna hijau untuk menu aktif */
+        .active-nav { color: #16a34a; }
     </style>
 </head>
 <body class="bg-gray-100 flex justify-center">
 
     <div class="w-full max-w-[480px] min-h-screen bg-white shadow-lg pb-24 relative">
         
-        <header class="bg-green-600 p-4 text-white sticky top-0 z-10 flex items-center gap-4">
-            <a href="index.html"><i class="fas fa-arrow-left"></i></a>
+        <header class="bg-green-600 p-4 text-white sticky top-0 z-10 flex items-center gap-4 shadow-md">
+            <a href="index.html" class="active:scale-90 transition-transform"><i class="fas fa-arrow-left"></i></a>
             <h1 class="text-xl font-bold">Kategori Lapak & Info</h1>
         </header>
 
         <section class="p-5">
             <h3 class="text-gray-400 text-xs font-black uppercase tracking-widest mb-4">Belanja di Lapak</h3>
             <div class="grid grid-cols-4 gap-4">
-                <a href="#" class="flex flex-col items-center gap-1">
+                <a href="index.html?filter=Kuliner" class="flex flex-col items-center gap-1 active:scale-95 transition-all">
                     <div class="w-14 h-14 bg-orange-100 text-orange-600 rounded-2xl flex items-center justify-center text-xl shadow-sm"><i class="fas fa-utensils"></i></div>
                     <span class="text-[10px] font-bold text-gray-600 text-center">Kuliner</span>
                 </a>
-                <a href="#" class="flex flex-col items-center gap-1">
-                    <div class="w-14 h-14 bg-blue-100 text-blue-600 rounded-2xl flex items-center justify-center text-xl shadow-sm"><i class="fas fa-tshirt"></i></div>
+                <a href="index.html?filter=Fashion" class="flex flex-col items-center gap-1 active:scale-95 transition-all">
+                    <div class="w-14 h-14 bg-pink-100 text-pink-600 rounded-2xl flex items-center justify-center text-xl shadow-sm"><i class="fas fa-tshirt"></i></div>
                     <span class="text-[10px] font-bold text-gray-600 text-center">Fashion</span>
                 </a>
-                <a href="#" class="flex flex-col items-center gap-1">
+                <a href="index.html?filter=Elektronik" class="flex flex-col items-center gap-1 active:scale-95 transition-all">
                     <div class="w-14 h-14 bg-purple-100 text-purple-600 rounded-2xl flex items-center justify-center text-xl shadow-sm"><i class="fas fa-mobile-alt"></i></div>
                     <span class="text-[10px] font-bold text-gray-600 text-center">Elektronik</span>
                 </a>
-                <a href="#" class="flex flex-col items-center gap-1">
+                <a href="index.html?filter=Otomotif" class="flex flex-col items-center gap-1 active:scale-95 transition-all">
                     <div class="w-14 h-14 bg-yellow-100 text-yellow-600 rounded-2xl flex items-center justify-center text-xl shadow-sm"><i class="fas fa-motorcycle"></i></div>
                     <span class="text-[10px] font-bold text-gray-600 text-center">Otomotif</span>
+                </a>
+            </div>
+            <div class="grid grid-cols-4 gap-4 mt-4">
+                <a href="index.html?filter=Tani" class="flex flex-col items-center gap-1 active:scale-95 transition-all">
+                    <div class="w-14 h-14 bg-green-100 text-green-600 rounded-2xl flex items-center justify-center text-xl shadow-sm"><i class="fas fa-seedling"></i></div>
+                    <span class="text-[10px] font-bold text-gray-600 text-center">Tani</span>
                 </a>
             </div>
         </section>
@@ -51,17 +62,13 @@
                     <div class="w-14 h-14 bg-green-100 text-green-600 rounded-2xl flex items-center justify-center text-xl shadow-sm"><i class="fas fa-bullhorn"></i></div>
                     <span class="text-[10px] font-bold text-gray-600 text-center">Berita Desa</span>
                 </a>
-                <a href="#" class="flex flex-col items-center gap-1">
+                <a href="info.html" class="flex flex-col items-center gap-1">
                     <div class="w-14 h-14 bg-red-100 text-red-600 rounded-2xl flex items-center justify-center text-xl shadow-sm"><i class="fas fa-search-location"></i></div>
                     <span class="text-[10px] font-bold text-gray-600 text-center">Kehilangan</span>
                 </a>
-                <a href="#" class="flex flex-col items-center gap-1">
+                <a href="info.html" class="flex flex-col items-center gap-1">
                     <div class="w-14 h-14 bg-indigo-100 text-indigo-600 rounded-2xl flex items-center justify-center text-xl shadow-sm"><i class="fas fa-briefcase"></i></div>
                     <span class="text-[10px] font-bold text-gray-600 text-center">Loker</span>
-                </a>
-                <a href="#" class="flex flex-col items-center gap-1">
-                    <div class="w-14 h-14 bg-teal-100 text-teal-600 rounded-2xl flex items-center justify-center text-xl shadow-sm"><i class="fas fa-calendar-check"></i></div>
-                    <span class="text-[10px] font-bold text-gray-600 text-center">Agenda</span>
                 </a>
             </div>
         </section>
