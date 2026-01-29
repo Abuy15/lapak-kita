@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kategori - Lapak Banjarharjo</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        .active-nav { color: #16a34a; } /* Warna hijau untuk menu aktif */
+    </style>
+</head>
+<body class="bg-gray-100 flex justify-center">
+
+    <div class="w-full max-w-[480px] min-h-screen bg-white shadow-lg pb-24 relative">
+        
+        <header class="bg-green-600 p-4 text-white sticky top-0 z-10 flex items-center gap-4">
+            <a href="index.html"><i class="fas fa-arrow-left"></i></a>
+            <h1 class="text-xl font-bold">Kategori Lapak & Info</h1>
+        </header>
+
+        <section class="p-5">
+            <h3 class="text-gray-400 text-xs font-black uppercase tracking-widest mb-4">Belanja di Lapak</h3>
+            <div class="grid grid-cols-4 gap-4">
+                <a href="#" class="flex flex-col items-center gap-1">
+                    <div class="w-14 h-14 bg-orange-100 text-orange-600 rounded-2xl flex items-center justify-center text-xl shadow-sm"><i class="fas fa-utensils"></i></div>
+                    <span class="text-[10px] font-bold text-gray-600 text-center">Kuliner</span>
+                </a>
+                <a href="#" class="flex flex-col items-center gap-1">
+                    <div class="w-14 h-14 bg-blue-100 text-blue-600 rounded-2xl flex items-center justify-center text-xl shadow-sm"><i class="fas fa-tshirt"></i></div>
+                    <span class="text-[10px] font-bold text-gray-600 text-center">Fashion</span>
+                </a>
+                <a href="#" class="flex flex-col items-center gap-1">
+                    <div class="w-14 h-14 bg-purple-100 text-purple-600 rounded-2xl flex items-center justify-center text-xl shadow-sm"><i class="fas fa-mobile-alt"></i></div>
+                    <span class="text-[10px] font-bold text-gray-600 text-center">Elektronik</span>
+                </a>
+                <a href="#" class="flex flex-col items-center gap-1">
+                    <div class="w-14 h-14 bg-yellow-100 text-yellow-600 rounded-2xl flex items-center justify-center text-xl shadow-sm"><i class="fas fa-motorcycle"></i></div>
+                    <span class="text-[10px] font-bold text-gray-600 text-center">Otomotif</span>
+                </a>
+            </div>
+        </section>
+
+        <hr class="mx-5 border-gray-100">
+
+        <section class="p-5">
+            <h3 class="text-gray-400 text-xs font-black uppercase tracking-widest mb-4">Informasi Warga</h3>
+            <div class="grid grid-cols-4 gap-4">
+                <a href="info.html" class="flex flex-col items-center gap-1">
+                    <div class="w-14 h-14 bg-green-100 text-green-600 rounded-2xl flex items-center justify-center text-xl shadow-sm"><i class="fas fa-bullhorn"></i></div>
+                    <span class="text-[10px] font-bold text-gray-600 text-center">Berita Desa</span>
+                </a>
+                <a href="#" class="flex flex-col items-center gap-1">
+                    <div class="w-14 h-14 bg-red-100 text-red-600 rounded-2xl flex items-center justify-center text-xl shadow-sm"><i class="fas fa-search-location"></i></div>
+                    <span class="text-[10px] font-bold text-gray-600 text-center">Kehilangan</span>
+                </a>
+                <a href="#" class="flex flex-col items-center gap-1">
+                    <div class="w-14 h-14 bg-indigo-100 text-indigo-600 rounded-2xl flex items-center justify-center text-xl shadow-sm"><i class="fas fa-briefcase"></i></div>
+                    <span class="text-[10px] font-bold text-gray-600 text-center">Loker</span>
+                </a>
+                <a href="#" class="flex flex-col items-center gap-1">
+                    <div class="w-14 h-14 bg-teal-100 text-teal-600 rounded-2xl flex items-center justify-center text-xl shadow-sm"><i class="fas fa-calendar-check"></i></div>
+                    <span class="text-[10px] font-bold text-gray-600 text-center">Agenda</span>
+                </a>
+            </div>
+        </section>
+
+        <nav class="fixed bottom-0 w-full max-w-[480px] bg-white border-t flex justify-around p-3 text-gray-400 shadow-lg z-50">
+            <a href="index.html" class="flex flex-col items-center"><i class="fas fa-home"></i><span class="text-[10px] font-bold">Home</span></a>
+            <a href="kategori.html" class="active-nav flex flex-col items-center"><i class="fas fa-th-large"></i><span class="text-[10px] font-bold">Kategori</span></a>
+            <a href="jual.html" class="flex flex-col items-center scale-110">
+                <i class="fas fa-plus-circle text-green-600 text-5xl -mt-9 bg-white rounded-full p-1 border-[6px] border-gray-50 shadow-sm"></i>
+                <span class="text-[10px] font-bold mt-1">Jual</span>
+            </a>
+            <a href="info.html" class="flex flex-col items-center"><i class="fas fa-newspaper"></i><span class="text-[10px] font-bold">Info Desa</span></a>
+            <a href="profil.html" class="flex flex-col items-center"><i class="fas fa-user-circle"></i><span class="text-[10px] font-bold">Akun</span></a>
+        </nav>
+
+    </div>
+</body>
+</html>
