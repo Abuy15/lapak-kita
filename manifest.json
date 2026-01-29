@@ -1,0 +1,21 @@
+{
+  "name": "Lapak-Kita Banjarharjo",
+  "short_name": "LapakKita",
+  "description": "Platform jual beli warga Banjarharjo",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#4CAF50",
+  "icons": [
+    {
+      "src": "logo.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "logo.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}
