@@ -4,10 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Lapak Banjarharjo - Saka Warga Kanggo Warga</title>
-    <link rel="icon" type="image/png" href="logo.png">
-    <link rel="apple-touch-icon" href="logo.png">
-    <link rel="manifest" href="manifest.json">
-    <meta name="theme-color" content="#16a34a">
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
@@ -38,11 +34,9 @@
         </header>
 
         <div class="px-4 pt-4">
-            <div class="relative overflow-hidden rounded-3xl shadow-sm border border-gray-100 h-44 bg-gray-50">
-                <div id="slider-container" class="flex transition-transform duration-500 ease-in-out h-full">
-                    <div class="min-w-full h-full flex items-center justify-center text-gray-400 text-xs italic">
-                        Memuat Iklan...
-                    </div>
+            <div class="relative overflow-hidden rounded-3xl shadow-sm border border-gray-100 h-44 bg-gray-50 text-center">
+                <div id="slider-container" class="flex transition-transform duration-500 h-full">
+                    <div class="min-w-full h-full flex items-center justify-center text-gray-400 text-xs italic">Memuat Iklan...</div>
                 </div>
                 <div class="absolute bottom-3 left-1/2 -translate-x-1/2 flex gap-1.5" id="slider-dots"></div>
             </div>
@@ -75,8 +69,7 @@
 
         <main class="p-4">
             <div class="flex justify-between items-end mb-4 px-1">
-                <h2 class="font-black text-gray-800 text-lg">Produk Terbaru</h2>
-                <span class="text-[10px] text-green-600 font-bold tracking-widest uppercase">Lihat Semua</span>
+                <h2 id="judul-section" class="font-black text-gray-800 text-lg">Produk Terbaru</h2>
             </div>
 
             <div id="loading" class="flex flex-col items-center justify-center py-20">
@@ -88,22 +81,14 @@
         </main>
 
         <nav class="fixed bottom-0 w-full max-w-[480px] bg-white border-t flex justify-around p-3 text-gray-400 text-xl shadow-[0_-2px_20px_rgba(0,0,0,0.08)] z-[9999]">
-            <a href="index.html" class="text-green-600 flex flex-col items-center flex-1">
-                <i class="fas fa-home"></i><span class="text-[10px] font-bold mt-1">Home</span>
-            </a>
-            <a href="kategori.html" class="flex flex-col items-center flex-1">
-                <i class="fas fa-th-large"></i><span class="text-[10px] font-bold mt-1">Kategori</span>
-            </a>
+            <a href="index.html" class="text-green-600 flex flex-col items-center flex-1"><i class="fas fa-home"></i><span class="text-[10px] font-bold mt-1">Home</span></a>
+            <a href="kategori.html" class="flex flex-col items-center flex-1"><i class="fas fa-th-large"></i><span class="text-[10px] font-bold mt-1">Kategori</span></a>
             <a href="jual.html" class="flex flex-col items-center flex-1 relative">
                 <i class="fas fa-plus-circle text-green-600 text-5xl -mt-10 bg-white rounded-full p-1 border-[6px] border-gray-50 shadow-sm"></i>
                 <span class="text-[10px] font-bold mt-1">Jual</span>
             </a>
-            <a href="info.html" class="flex flex-col items-center flex-1">
-                <i class="fas fa-newspaper"></i><span class="text-[10px] font-bold mt-1">Info</span>
-            </a>
-            <a href="#" id="link-akun" class="flex flex-col items-center flex-1">
-                <i class="fas fa-user-circle"></i><span class="text-[10px] font-bold mt-1">Akun</span>
-            </a>
+            <a href="info.html" class="flex flex-col items-center flex-1"><i class="fas fa-newspaper"></i><span class="text-[10px] font-bold mt-1">Info</span></a>
+            <a href="#" id="link-akun" class="flex flex-col items-center flex-1"><i class="fas fa-user-circle"></i><span class="text-[10px] font-bold mt-1">Akun</span></a>
         </nav>
     </div>
 
@@ -120,125 +105,100 @@
         const app = initializeApp(firebaseConfig);
         const db = getDatabase(app);
         
-        // Cek Login
-        const nomorAdmin = "6285647087424"; 
-        const namaUser = localStorage.getItem('user_nama');
+        let allProducts = {}; // Simpan semua data di sini agar filter cepat
+        const nomorAdmin = "6285647087424";
         const waUser = localStorage.getItem('user_wa');
+
+        // AMBIL DATA PRODUK
+        onValue(ref(db, 'products'), (snapshot) => {
+            allProducts = snapshot.val() || {};
+            renderProduk('Semua');
+            document.getElementById('loading').style.display = 'none';
+        });
+
+        // FUNGSI UNTUK MENAMPILKAN BARANG (PROSES FILTER DI SINI)
+        function renderProduk(kategoriDipilih) {
+            const listElement = document.getElementById('produk-list');
+            listElement.innerHTML = '';
+            
+            const keys = Object.keys(allProducts).reverse();
+            let adaBarang = false;
+
+            keys.forEach(key => {
+                const p = allProducts[key];
+                
+                // CEK APAKAH KATEGORI COCOK
+                if (kategoriDipilih === 'Semua' || p.kategori === kategoriDipilih) {
+                    adaBarang = true;
+                    const isAdmin = (waUser === nomorAdmin);
+                    const isMilikSendiri = (p.wa === waUser);
+                    const tombolHapus = (isAdmin || isMilikSendiri) 
+                        ? `<button onclick="hapusProduk('${key}')" class="text-red-500 border border-red-100 px-2 py-1 rounded-lg bg-red-50 ml-1 text-xs"><i class="fas fa-trash"></i></button>` : "";
+
+                    listElement.innerHTML += `
+                        <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden flex flex-col h-full">
+                            <img src="${p.foto}" class="w-full aspect-square object-cover">
+                            <div class="p-3 flex flex-col flex-1 justify-between">
+                                <div>
+                                    <h3 class="text-[11px] font-bold text-gray-700 line-clamp-2 leading-tight mb-1">${p.nama}</h3>
+                                    <p class="text-green-600 font-black text-sm">Rp ${Number(p.harga).toLocaleString('id-ID')}</p>
+                                </div>
+                                <div class="mt-3">
+                                    <p class="text-[9px] text-gray-400 mb-2"><i class="fas fa-map-marker-alt text-green-500 mr-1"></i> ${p.desa}</p>
+                                    <div class="flex items-center">
+                                        <a href="https://wa.me/${p.wa}" target="_blank" class="flex-1 text-center bg-green-600 text-white text-[10px] font-bold py-2 rounded-xl">Beli</a>
+                                        ${tombolHapus}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>`;
+                }
+            });
+
+            if (!adaBarang) {
+                listElement.innerHTML = `<p class="col-span-2 text-center text-gray-400 py-10 text-xs">Dereng wonten barang kategori ${kategoriDipilih}, Lur.</p>`;
+            }
+        }
+
+        // FUNGSI KLIK KATEGORI
+        window.filterProduk = (kat, el) => {
+            // Ganti Warna Tombol
+            document.querySelectorAll('.cat-item').forEach(i => i.classList.remove('cat-active'));
+            el.classList.add('cat-active');
+            
+            // Update Judul & Filter Barang
+            document.getElementById('judul-section').innerText = kat === 'Semua' ? 'Produk Terbaru' : 'Kategori ' + kat;
+            renderProduk(kat);
+        };
+
+        // HAPUS PRODUK
+        window.hapusProduk = (id) => {
+            if(confirm("Yakin pan dihapus?")) {
+                remove(ref(db, 'products/' + id));
+            }
+        };
+
+        // AKUN & LOGIN
+        const namaUser = localStorage.getItem('user_nama');
         const linkAkun = document.getElementById('link-akun');
-        
         if (namaUser) {
             document.getElementById('welcome-name').innerText = "Sugeng Rawuh, " + namaUser + "!";
             linkAkun.href = "profil.html";
         } else {
-            document.getElementById('welcome-name').innerText = "Sugeng Rawuh, Warga!";
             linkAkun.href = "daftar.html";
         }
 
-        // --- LOGIKA SLIDER FIX ---
-        const sliderCont = document.getElementById('slider-container');
-        const sliderDots = document.getElementById('slider-dots');
-
+        // IKLAN SLIDER
         onValue(ref(db, 'ads'), (snapshot) => {
             const ads = snapshot.val();
-            if (!ads) {
-                sliderCont.innerHTML = `<div class="min-w-full h-full flex items-center justify-center bg-gray-100 text-gray-400">Belum ada iklan</div>`;
-                return;
-            }
-
-            let htmlContent = "";
-            let dotContent = "";
-            let count = 0;
-
-            // Loop untuk cek slide1 dan slide2
-            ['slide1', 'slide2'].forEach((s, index) => {
-                if (ads[s]) {
-                    htmlContent += `
-                        <div class="min-w-full h-full relative">
-                            <a href="https://wa.me/${ads[s].link}">
-                                <img src="${ads[s].url}" class="w-full h-full object-cover">
-                            </a>
-                        </div>`;
-                    dotContent += `<div class="w-1.5 h-1.5 rounded-full bg-white opacity-40 transition-all duration-300"></div>`;
-                    count++;
-                }
+            const sliderCont = document.getElementById('slider-container');
+            if (!ads) return;
+            let html = "";
+            ['slide1', 'slide2'].forEach(s => {
+                if(ads[s]) html += `<div class="min-w-full h-full"><a href="https://wa.me/${ads[s].link}"><img src="${ads[s].url}" class="w-full h-full object-cover"></a></div>`;
             });
-
-            sliderCont.innerHTML = htmlContent;
-            sliderDots.innerHTML = dotContent;
-
-            // Jalankan animasi jika iklan lebih dari 1
-            if (count > 1) {
-                let currentSlide = 0;
-                setInterval(() => {
-                    currentSlide = (currentSlide + 1) % count;
-                    sliderCont.style.transform = `translateX(-${currentSlide * 100}%)`;
-                    Array.from(sliderDots.children).forEach((dot, i) => {
-                        dot.style.opacity = i === currentSlide ? "1" : "0.4";
-                        dot.style.width = i === currentSlide ? "12px" : "6px";
-                    });
-                }, 4000);
-            } else if (count === 1) {
-                // Jika cuma 1 iklan, buat dot-nya penuh
-                sliderDots.children[0].style.opacity = "1";
-                sliderDots.children[0].style.width = "12px";
-            }
+            sliderCont.innerHTML = html;
         });
-
-        // --- LOGIKA HAPUS & PRODUK ---
-        window.hapusProduk = (productId) => {
-            const isAdm = (waUser === nomorAdmin);
-            const pesan = isAdm ? "Admin: Yakin mau hapus iklan warga ini?" : "Iklan wis laku? Yakin pan dihapus?";
-            if (confirm(pesan)) {
-                remove(ref(db, 'products/' + productId))
-                .then(() => alert("Iklan terhapus!"))
-                .catch((err) => alert("Gagal hapus: " + err.message));
-            }
-        };
-
-        onValue(ref(db, 'products'), (snapshot) => {
-            const products = snapshot.val();
-            const listElement = document.getElementById('produk-list');
-            listElement.innerHTML = '';
-            document.getElementById('loading').style.display = 'none';
-
-            if (!products) {
-                listElement.innerHTML = '<p class="col-span-2 text-center text-gray-400 py-10 text-xs">Belum ada dagangan.</p>';
-                return;
-            }
-
-            const keys = Object.keys(products).reverse();
-            keys.forEach(key => {
-                const p = products[key];
-                const isAdmin = (waUser === nomorAdmin);
-                const isMilikSendiri = (p.wa === waUser);
-                const tombolHapus = (isAdmin || isMilikSendiri) 
-                    ? `<button onclick="hapusProduk('${key}')" class="text-red-500 font-bold text-[9px] border border-red-100 px-2 py-1 rounded-lg bg-red-50 ml-1"><i class="fas fa-trash"></i></button>` : "";
-
-                listElement.innerHTML += `
-                    <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden flex flex-col h-full">
-                        <img src="${p.foto}" class="w-full aspect-square object-cover">
-                        <div class="p-3 flex flex-col flex-1 justify-between">
-                            <div>
-                                <h3 class="text-[11px] font-bold text-gray-700 line-clamp-2 leading-tight mb-1">${p.nama}</h3>
-                                <p class="text-green-600 font-black text-sm">Rp ${Number(p.harga).toLocaleString('id-ID')}</p>
-                            </div>
-                            <div class="mt-3">
-                                <p class="text-[9px] text-gray-400 mb-2 font-medium"><i class="fas fa-map-marker-alt text-green-500 mr-1"></i> ${p.desa}</p>
-                                <div class="flex items-center">
-                                    <a href="https://wa.me/${p.wa}" target="_blank" class="flex-1 text-center bg-green-600 text-white text-[9px] font-bold py-2 rounded-xl active:scale-95 transition-all">Beli</a>
-                                    ${tombolHapus}
-                                </div>
-                            </div>
-                        </div>
-                    </div>`;
-            });
-        });
-
-        window.filterProduk = (kat, el) => {
-            document.querySelectorAll('.cat-item').forEach(i => i.classList.remove('cat-active'));
-            el.classList.add('cat-active');
-            // Logika filter sederhana bisa ditambah di sini jika perlu
-        };
     </script>
 </body>
 </html>
