@@ -32,6 +32,15 @@
             </div>
         </header>
 
+        <div class="px-4 pt-4">
+            <div class="relative overflow-hidden rounded-3xl shadow-sm border border-gray-100 h-44 bg-gray-50">
+                <div id="slider-container" class="flex transition-transform duration-500 h-full">
+                    <div class="min-w-full h-full flex items-center justify-center text-gray-400 text-xs italic">Memuat Iklan...</div>
+                </div>
+                <div class="absolute bottom-3 left-1/2 -translate-x-1/2 flex gap-1.5" id="slider-dots"></div>
+            </div>
+        </div>
+
         <section class="p-4 flex gap-4 overflow-x-auto hide-scroll text-center text-[10px] font-bold text-gray-600">
             <div onclick="filterProduk('Semua', this)" class="cat-item cat-active flex-shrink-0 cursor-pointer">
                 <div class="cat-icon bg-gray-100 p-4 rounded-2xl mx-auto w-14 h-14 flex items-center justify-center transition-all shadow-sm"><i class="fas fa-th-large text-xl"></i></div>
@@ -88,7 +97,35 @@
         let allProducts = {};
         const nomorAdmin = "6285647087424";
         const waUser = localStorage.getItem('user_wa');
+        const namaUser = localStorage.getItem('user_nama');
 
+        // Tampilkan nama di header
+        if(namaUser) {
+            document.getElementById('welcome-name').innerText = "Sugeng Rawuh, " + namaUser + "!";
+        }
+
+        // AMBIL DATA IKLAN
+        onValue(ref(db, 'ads'), (snapshot) => {
+            const ads = snapshot.val();
+            const sliderCont = document.getElementById('slider-container');
+            const dotsCont = document.getElementById('slider-dots');
+            if (!ads) return;
+            let html = ""; let dots = "";
+            const keys = Object.keys(ads);
+            keys.forEach((key, index) => {
+                html += `<div class="min-w-full h-full"><a href="https://wa.me/${ads[key].link}"><img src="${ads[key].url}" class="w-full h-full object-cover"></a></div>`;
+                dots += `<div class="w-1.5 h-1.5 rounded-full bg-white/50"></div>`;
+            });
+            sliderCont.innerHTML = html;
+            dotsCont.innerHTML = dots;
+            let current = 0;
+            setInterval(() => {
+                current = (current + 1) % sliderCont.children.length;
+                sliderCont.style.transform = `translateX(-${current * 100}%)`;
+            }, 4000);
+        });
+
+        // AMBIL DATA PRODUK
         onValue(ref(db, 'products'), (snapshot) => {
             allProducts = snapshot.val() || {};
             renderProduk('Semua');
@@ -105,7 +142,6 @@
                 const p = allProducts[key];
                 if (kategoriDipilih === 'Semua' || p.kategori === kategoriDipilih) {
                     adaBarang = true;
-                    // Proteksi jika foto tidak ada/rusak
                     const fotoSrc = p.foto ? p.foto : 'https://via.placeholder.com/300?text=No+Image';
                     const isAdmin = (waUser === nomorAdmin);
                     const tombolHapus = (isAdmin || p.wa === waUser) ? `<button onclick="hapusProduk('${key}')" class="text-red-500 ml-2"><i class="fas fa-trash"></i></button>` : "";
