@@ -16,24 +16,24 @@
             <h1 class="text-xl font-bold">Kirim Kabar Warga</h1>
         </header>
 
-        <form class="p-5 space-y-4">
+        <form id="formInfo" class="p-5 space-y-4">
             <div>
                 <label class="block text-sm font-bold text-gray-700 mb-2">Jenis Informasi</label>
                 <div class="grid grid-cols-2 gap-2">
                     <label class="cursor-pointer">
-                        <input type="radio" name="kat" class="peer hidden" checked>
+                        <input type="radio" name="kat" value="Berita Desa" class="peer hidden" checked>
                         <div class="text-center p-2 border rounded-xl peer-checked:bg-green-100 peer-checked:border-green-500 text-xs font-semibold uppercase">Berita Desa</div>
                     </label>
                     <label class="cursor-pointer">
-                        <input type="radio" name="kat" class="peer hidden">
+                        <input type="radio" name="kat" value="Kehilangan" class="peer hidden">
                         <div class="text-center p-2 border rounded-xl peer-checked:bg-red-100 peer-checked:border-red-500 text-xs font-semibold uppercase">Kehilangan</div>
                     </label>
                     <label class="cursor-pointer">
-                        <input type="radio" name="kat" class="peer hidden">
+                        <input type="radio" name="kat" value="Kegiatan" class="peer hidden">
                         <div class="text-center p-2 border rounded-xl peer-checked:bg-blue-100 peer-checked:border-blue-500 text-xs font-semibold uppercase">Kegiatan</div>
                     </label>
                     <label class="cursor-pointer">
-                        <input type="radio" name="kat" class="peer hidden">
+                        <input type="radio" name="kat" value="Lainnya" class="peer hidden">
                         <div class="text-center p-2 border rounded-xl peer-checked:bg-orange-100 peer-checked:border-orange-500 text-xs font-semibold uppercase">Lainnya</div>
                     </label>
                 </div>
@@ -41,36 +41,118 @@
 
             <div>
                 <label class="block text-sm font-bold text-gray-700">Judul Info</label>
-                <input type="text" placeholder="Contoh: Kerja Bakti RT 02 Hari Minggu" class="w-full mt-1 p-3 border rounded-xl focus:ring-2 focus:ring-green-500 focus:outline-none">
+                <input type="text" id="judul" required placeholder="Contoh: Kerja Bakti RT 02 Hari Minggu" class="w-full mt-1 p-3 border rounded-xl focus:ring-2 focus:ring-green-500 focus:outline-none">
             </div>
 
             <div>
                 <label class="block text-sm font-bold text-gray-700">Isi Berita / Penjelasan</label>
-                <textarea rows="4" placeholder="Tuliskan detail info di sini..." class="w-full mt-1 p-3 border rounded-xl focus:ring-2 focus:ring-green-500 focus:outline-none"></textarea>
+                <textarea id="deskripsi" required rows="4" placeholder="Tuliskan detail info di sini..." class="w-full mt-1 p-3 border rounded-xl focus:ring-2 focus:ring-green-500 focus:outline-none"></textarea>
             </div>
 
             <div>
                 <label class="block text-sm font-bold text-gray-700 mb-2">Foto Pendukung (Opsional)</label>
+                <div id="preview-area" class="hidden mb-2">
+                    <img id="img-preview" class="w-full h-40 object-cover rounded-xl shadow-sm border">
+                </div>
                 <label class="flex flex-col items-center justify-center w-full h-32 border-2 border-dashed border-gray-200 rounded-xl hover:bg-gray-50 cursor-pointer">
                     <i class="fas fa-image text-2xl text-gray-300"></i>
-                    <span class="text-xs text-gray-400 mt-2">Tambah Foto</span>
-                    <input type="file" class="hidden">
+                    <span id="label-foto" class="text-xs text-gray-400 mt-2">Tambah Foto</span>
+                    <input type="file" id="file-foto" accept="image/*" class="hidden">
                 </label>
             </div>
 
-            <button type="button" onclick="kirimInfo()" class="w-full bg-green-600 text-white font-bold py-4 rounded-xl shadow-lg mt-4 transition active:scale-95">
+            <button type="submit" id="btnKirim" class="w-full bg-green-600 text-white font-bold py-4 rounded-xl shadow-lg mt-4 transition active:scale-95">
                 KIRIM KE INFO DESA
             </button>
-            <p class="text-[10px] text-center text-gray-400 font-medium italic">*Setiap info yang masuk akan ditinjau oleh Admin sebelum tayang.</p>
+            <p class="text-[10px] text-center text-gray-400 font-medium italic">*Informasi akan langsung tampil di halaman Info Desa.</p>
         </form>
-
     </div>
 
-    <script>
-        function kirimInfo() {
-            alert('Matur nuwun! Kabar saking panjenengan sampun dipun tampi admin.');
-            window.location.href = 'info.html';
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+        import { getDatabase, ref, push, set } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyAowYbcfC9RsMCxKf2ZmwvTiLvooKaWI5U",
+            databaseURL: "https://lapak-banjarharjo-default-rtdb.asia-southeast1.firebasedatabase.app",
+            projectId: "lapak-banjarharjo"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getDatabase(app);
+
+        const fileInput = document.getElementById('file-foto');
+        const previewImg = document.getElementById('img-preview');
+        const previewArea = document.getElementById('preview-area');
+        const form = document.getElementById('formInfo');
+        const btn = document.getElementById('btnKirim');
+
+        // Preview Gambar
+        fileInput.onchange = evt => {
+            const [file] = fileInput.files;
+            if (file) {
+                previewImg.src = URL.createObjectURL(file);
+                previewArea.classList.remove('hidden');
+                document.getElementById('label-foto').innerText = "Ganti Foto";
+            }
         }
+
+        form.onsubmit = async (e) => {
+            e.preventDefault();
+            
+            const judul = document.getElementById('judul').value;
+            const deskripsi = document.getElementById('deskripsi').value;
+            const kategori = document.querySelector('input[name="kat"]:checked').value;
+            let imageUrl = "";
+
+            btn.disabled = true;
+            btn.innerText = "⏳ Sedang Mengirim...";
+
+            try {
+                // 1. Upload Foto jika ada
+                if (fileInput.files[0]) {
+                    const formData = new FormData();
+                    formData.append("UPLOADCARE_PUB_KEY", "demopublickey");
+                    formData.append("UPLOADCARE_STORE", "1");
+                    formData.append("file", fileInput.files[0]);
+
+                    const res = await fetch("https://upload.uploadcare.com/base/", {
+                        method: "POST",
+                        body: formData
+                    });
+                    const resData = await res.json();
+                    if (resData.file) {
+                        imageUrl = `https://ucarecdn.com/${resData.file}/`;
+                    }
+                }
+
+                // 2. Simpan ke Firebase
+                const infoRef = ref(db, 'info_desa');
+                const newInfoRef = push(infoRef);
+                
+                const sekarang = new Date();
+                const waktuString = sekarang.toLocaleDateString('id-ID', { 
+                    day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' 
+                });
+
+                await set(newInfoRef, {
+                    judul: judul,
+                    deskripsi: deskripsi,
+                    kategori: kategori,
+                    foto: imageUrl,
+                    waktu: waktuString,
+                    timestamp: Date.now()
+                });
+
+                alert('✅ Mantap! Kabar desa berhasil diposting.');
+                window.location.href = 'info.html';
+
+            } catch (err) {
+                alert('❌ Gagal: ' + err.message);
+                btn.disabled = false;
+                btn.innerText = "KIRIM KE INFO DESA";
+            }
+        };
     </script>
 </body>
 </html>
