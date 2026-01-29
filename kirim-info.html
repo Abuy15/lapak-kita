@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kirim Info - Lapak Banjarharjo</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body class="bg-gray-100 flex justify-center">
+
+    <div class="w-full max-w-[480px] min-h-screen bg-white shadow-lg pb-10">
+        
+        <header class="bg-green-600 p-4 text-white flex items-center gap-4">
+            <a href="info.html"><i class="fas fa-arrow-left text-lg"></i></a>
+            <h1 class="text-xl font-bold">Kirim Kabar Warga</h1>
+        </header>
+
+        <form class="p-5 space-y-4">
+            <div>
+                <label class="block text-sm font-bold text-gray-700 mb-2">Jenis Informasi</label>
+                <div class="grid grid-cols-2 gap-2">
+                    <label class="cursor-pointer">
+                        <input type="radio" name="kat" class="peer hidden" checked>
+                        <div class="text-center p-2 border rounded-xl peer-checked:bg-green-100 peer-checked:border-green-500 text-xs font-semibold uppercase">Berita Desa</div>
+                    </label>
+                    <label class="cursor-pointer">
+                        <input type="radio" name="kat" class="peer hidden">
+                        <div class="text-center p-2 border rounded-xl peer-checked:bg-red-100 peer-checked:border-red-500 text-xs font-semibold uppercase">Kehilangan</div>
+                    </label>
+                    <label class="cursor-pointer">
+                        <input type="radio" name="kat" class="peer hidden">
+                        <div class="text-center p-2 border rounded-xl peer-checked:bg-blue-100 peer-checked:border-blue-500 text-xs font-semibold uppercase">Kegiatan</div>
+                    </label>
+                    <label class="cursor-pointer">
+                        <input type="radio" name="kat" class="peer hidden">
+                        <div class="text-center p-2 border rounded-xl peer-checked:bg-orange-100 peer-checked:border-orange-500 text-xs font-semibold uppercase">Lainnya</div>
+                    </label>
+                </div>
+            </div>
+
+            <div>
+                <label class="block text-sm font-bold text-gray-700">Judul Info</label>
+                <input type="text" placeholder="Contoh: Kerja Bakti RT 02 Hari Minggu" class="w-full mt-1 p-3 border rounded-xl focus:ring-2 focus:ring-green-500 focus:outline-none">
+            </div>
+
+            <div>
+                <label class="block text-sm font-bold text-gray-700">Isi Berita / Penjelasan</label>
+                <textarea rows="4" placeholder="Tuliskan detail info di sini..." class="w-full mt-1 p-3 border rounded-xl focus:ring-2 focus:ring-green-500 focus:outline-none"></textarea>
+            </div>
+
+            <div>
+                <label class="block text-sm font-bold text-gray-700 mb-2">Foto Pendukung (Opsional)</label>
+                <label class="flex flex-col items-center justify-center w-full h-32 border-2 border-dashed border-gray-200 rounded-xl hover:bg-gray-50 cursor-pointer">
+                    <i class="fas fa-image text-2xl text-gray-300"></i>
+                    <span class="text-xs text-gray-400 mt-2">Tambah Foto</span>
+                    <input type="file" class="hidden">
+                </label>
+            </div>
+
+            <button type="button" onclick="kirimInfo()" class="w-full bg-green-600 text-white font-bold py-4 rounded-xl shadow-lg mt-4 transition active:scale-95">
+                KIRIM KE INFO DESA
+            </button>
+            <p class="text-[10px] text-center text-gray-400 font-medium italic">*Setiap info yang masuk akan ditinjau oleh Admin sebelum tayang.</p>
+        </form>
+
+    </div>
+
+    <script>
+        function kirimInfo() {
+            alert('Matur nuwun! Kabar saking panjenengan sampun dipun tampi admin.');
+            window.location.href = 'info.html';
+        }
+    </script>
+</body>
+</html>
