@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Lapak Banjarharjo - Saka Warga Kanggo Warga</title>
-   <link rel="icon" type="image/png" href="logo.png">
+    <link rel="icon" type="image/png" href="logo.png">
     <link rel="apple-touch-icon" href="logo.png">
     <link rel="manifest" href="manifest.json">
     <meta name="theme-color" content="#16a34a">
@@ -40,14 +40,11 @@
         <div class="px-4 pt-4">
             <div class="relative overflow-hidden rounded-3xl shadow-sm border border-gray-100 h-44 bg-gray-50">
                 <div id="slider-container" class="flex transition-transform duration-500 ease-in-out h-full">
-                    <div class="min-w-full h-full relative">
-                        <img src="https://via.placeholder.com/800x400?text=Loading+Iklan..." class="w-full h-full object-cover">
+                    <div class="min-w-full h-full flex items-center justify-center text-gray-400 text-xs italic">
+                        Memuat Iklan...
                     </div>
                 </div>
-                <div class="absolute bottom-3 left-1/2 -translate-x-1/2 flex gap-1.5" id="slider-dots">
-                    <div class="w-3 h-1.5 rounded-full bg-white opacity-100 transition-all duration-300"></div>
-                    <div class="w-1.5 h-1.5 rounded-full bg-white opacity-40 transition-all duration-300"></div>
-                </div>
+                <div class="absolute bottom-3 left-1/2 -translate-x-1/2 flex gap-1.5" id="slider-dots"></div>
             </div>
         </div>
 
@@ -122,8 +119,8 @@
 
         const app = initializeApp(firebaseConfig);
         const db = getDatabase(app);
-        let allProducts = {};
-
+        
+        // Cek Login
         const nomorAdmin = "6285647087424"; 
         const namaUser = localStorage.getItem('user_nama');
         const waUser = localStorage.getItem('user_wa');
@@ -137,35 +134,55 @@
             linkAkun.href = "daftar.html";
         }
 
-        // --- LOGIKA SLIDER REALTIME DARI DATABASE ---
+        // --- LOGIKA SLIDER FIX ---
         const sliderCont = document.getElementById('slider-container');
-        const dots = document.getElementById('slider-dots').children;
+        const sliderDots = document.getElementById('slider-dots');
 
         onValue(ref(db, 'ads'), (snapshot) => {
             const ads = snapshot.val();
-            if (ads && ads.slide1 && ads.slide2) {
-                sliderCont.innerHTML = `
-                    <div class="min-w-full h-full relative">
-                        <a href="https://wa.me/${ads.slide1.link}"><img src="${ads.slide1.url}" class="w-full h-full object-cover"></a>
-                    </div>
-                    <div class="min-w-full h-full relative">
-                        <a href="https://wa.me/${ads.slide2.link}"><img src="${ads.slide2.url}" class="w-full h-full object-cover"></a>
-                    </div>
-                `;
+            if (!ads) {
+                sliderCont.innerHTML = `<div class="min-w-full h-full flex items-center justify-center bg-gray-100 text-gray-400">Belum ada iklan</div>`;
+                return;
+            }
+
+            let htmlContent = "";
+            let dotContent = "";
+            let count = 0;
+
+            // Loop untuk cek slide1 dan slide2
+            ['slide1', 'slide2'].forEach((s, index) => {
+                if (ads[s]) {
+                    htmlContent += `
+                        <div class="min-w-full h-full relative">
+                            <a href="https://wa.me/${ads[s].link}">
+                                <img src="${ads[s].url}" class="w-full h-full object-cover">
+                            </a>
+                        </div>`;
+                    dotContent += `<div class="w-1.5 h-1.5 rounded-full bg-white opacity-40 transition-all duration-300"></div>`;
+                    count++;
+                }
+            });
+
+            sliderCont.innerHTML = htmlContent;
+            sliderDots.innerHTML = dotContent;
+
+            // Jalankan animasi jika iklan lebih dari 1
+            if (count > 1) {
+                let currentSlide = 0;
+                setInterval(() => {
+                    currentSlide = (currentSlide + 1) % count;
+                    sliderCont.style.transform = `translateX(-${currentSlide * 100}%)`;
+                    Array.from(sliderDots.children).forEach((dot, i) => {
+                        dot.style.opacity = i === currentSlide ? "1" : "0.4";
+                        dot.style.width = i === currentSlide ? "12px" : "6px";
+                    });
+                }, 4000);
+            } else if (count === 1) {
+                // Jika cuma 1 iklan, buat dot-nya penuh
+                sliderDots.children[0].style.opacity = "1";
+                sliderDots.children[0].style.width = "12px";
             }
         });
-
-        let currentSlide = 0;
-        setInterval(() => {
-            currentSlide = (currentSlide + 1) % 2;
-            if(sliderCont) {
-                sliderCont.style.transform = `translateX(-${currentSlide * 100}%)`;
-                Array.from(dots).forEach((dot, i) => {
-                    dot.style.opacity = i === currentSlide ? "1" : "0.4";
-                    dot.style.width = i === currentSlide ? "12px" : "6px";
-                });
-            }
-        }, 4000);
 
         // --- LOGIKA HAPUS & PRODUK ---
         window.hapusProduk = (productId) => {
@@ -179,52 +196,48 @@
         };
 
         onValue(ref(db, 'products'), (snapshot) => {
-            allProducts = snapshot.val();
-            renderProducts('Semua');
-            document.getElementById('loading').style.display = 'none';
-        });
-
-        function renderProducts(filter) {
+            const products = snapshot.val();
             const listElement = document.getElementById('produk-list');
             listElement.innerHTML = '';
-            if (!allProducts) {
+            document.getElementById('loading').style.display = 'none';
+
+            if (!products) {
                 listElement.innerHTML = '<p class="col-span-2 text-center text-gray-400 py-10 text-xs">Belum ada dagangan.</p>';
                 return;
             }
-            const keys = Object.keys(allProducts).reverse();
+
+            const keys = Object.keys(products).reverse();
             keys.forEach(key => {
-                const p = allProducts[key];
+                const p = products[key];
                 const isAdmin = (waUser === nomorAdmin);
                 const isMilikSendiri = (p.wa === waUser);
                 const tombolHapus = (isAdmin || isMilikSendiri) 
                     ? `<button onclick="hapusProduk('${key}')" class="text-red-500 font-bold text-[9px] border border-red-100 px-2 py-1 rounded-lg bg-red-50 ml-1"><i class="fas fa-trash"></i></button>` : "";
 
-                if (filter === 'Semua' || p.kategori === filter) {
-                    listElement.innerHTML += `
-                        <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden flex flex-col h-full">
-                            <img src="${p.foto}" class="w-full aspect-square object-cover">
-                            <div class="p-3 flex flex-col flex-1 justify-between">
-                                <div>
-                                    <h3 class="text-[11px] font-bold text-gray-700 line-clamp-2 leading-tight mb-1">${p.nama}</h3>
-                                    <p class="text-green-600 font-black text-sm">Rp ${Number(p.harga).toLocaleString('id-ID')}</p>
-                                </div>
-                                <div class="mt-3">
-                                    <p class="text-[9px] text-gray-400 mb-2 font-medium"><i class="fas fa-map-marker-alt text-green-500 mr-1"></i> ${p.desa}</p>
-                                    <div class="flex items-center">
-                                        <a href="https://wa.me/${p.wa}" target="_blank" class="flex-1 text-center bg-green-600 text-white text-[9px] font-bold py-2 rounded-xl active:scale-95 transition-all">Beli</a>
-                                        ${tombolHapus}
-                                    </div>
+                listElement.innerHTML += `
+                    <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden flex flex-col h-full">
+                        <img src="${p.foto}" class="w-full aspect-square object-cover">
+                        <div class="p-3 flex flex-col flex-1 justify-between">
+                            <div>
+                                <h3 class="text-[11px] font-bold text-gray-700 line-clamp-2 leading-tight mb-1">${p.nama}</h3>
+                                <p class="text-green-600 font-black text-sm">Rp ${Number(p.harga).toLocaleString('id-ID')}</p>
+                            </div>
+                            <div class="mt-3">
+                                <p class="text-[9px] text-gray-400 mb-2 font-medium"><i class="fas fa-map-marker-alt text-green-500 mr-1"></i> ${p.desa}</p>
+                                <div class="flex items-center">
+                                    <a href="https://wa.me/${p.wa}" target="_blank" class="flex-1 text-center bg-green-600 text-white text-[9px] font-bold py-2 rounded-xl active:scale-95 transition-all">Beli</a>
+                                    ${tombolHapus}
                                 </div>
                             </div>
-                        </div>`;
-                }
+                        </div>
+                    </div>`;
             });
-        }
+        });
 
         window.filterProduk = (kat, el) => {
             document.querySelectorAll('.cat-item').forEach(i => i.classList.remove('cat-active'));
             el.classList.add('cat-active');
-            renderProducts(kat);
+            // Logika filter sederhana bisa ditambah di sini jika perlu
         };
     </script>
 </body>
