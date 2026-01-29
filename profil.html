@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Akun Saya - Lapak Banjarharjo</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;900&display=swap');
+        body { font-family: 'Inter', sans-serif; }
+    </style>
+</head>
+<body class="bg-gray-50 flex justify-center">
+    <div class="w-full max-w-[480px] min-h-screen bg-white shadow-lg pb-24">
+        
+        <div class="bg-green-600 p-8 pt-12 rounded-b-[40px] text-white text-center shadow-lg relative overflow-hidden">
+            <div class="relative z-10">
+                <div class="w-24 h-24 bg-white/20 backdrop-blur-md rounded-[35px] flex items-center justify-center mx-auto mb-4 border-2 border-white/30 shadow-xl">
+                    <i class="fas fa-user text-4xl"></i>
+                </div>
+                <h2 id="disp-nama" class="text-xl font-black italic">Nama Warga</h2>
+                <p id="disp-wa" class="text-green-100 text-sm font-medium">08123xxx</p>
+                <span class="inline-block bg-yellow-400 text-green-900 text-[9px] font-black px-3 py-1 rounded-full mt-3 uppercase">Member Banjarharjo</span>
+            </div>
+            <div class="absolute -top-10 -right-10 w-32 h-32 bg-white/10 rounded-full"></div>
+        </div>
+
+        <main class="p-6">
+            <div class="flex justify-between items-center mb-4">
+                <h3 class="font-black text-gray-800 uppercase tracking-tighter">Dagangan Saya</h3>
+                <span id="count-barang" class="bg-gray-100 text-gray-500 text-[10px] font-bold px-3 py-1 rounded-full">0 Barang</span>
+            </div>
+
+            <div id="my-products" class="space-y-4">
+                <p class="text-center text-gray-400 py-10 text-xs italic">Lagi loading data daganganmu...</p>
+            </div>
+
+            <hr class="my-8 border-gray-100">
+
+            <button onclick="logout()" class="w-full p-4 text-red-500 font-bold text-sm bg-red-50 rounded-2xl flex items-center justify-center gap-2 active:bg-red-100 transition-all border border-red-100">
+                <i class="fas fa-sign-out-alt"></i> Keluar / Ganti Akun
+            </button>
+        </main>
+
+        <nav class="fixed bottom-0 w-full max-w-[480px] bg-white border-t flex justify-around p-3 text-gray-400 text-xl z-[9999]">
+            <a href="index.html" class="flex flex-col items-center flex-1">
+                <i class="fas fa-home text-gray-300"></i><span class="text-[10px] font-bold mt-1">Home</span>
+            </a>
+            <a href="info.html" class="flex flex-col items-center flex-1">
+                <i class="fas fa-newspaper"></i><span class="text-[10px] font-bold mt-1">Info</span>
+            </a>
+            <a href="jual.html" class="flex flex-col items-center flex-1 relative">
+                <i class="fas fa-plus-circle text-green-600 text-5xl -mt-10 bg-white rounded-full p-1 border-[6px] border-gray-50 shadow-sm"></i>
+                <span class="text-[10px] font-bold mt-1">Jual</span>
+            </a>
+            <a href="profil.html" class="text-green-600 flex flex-col items-center flex-1">
+                <i class="fas fa-user-circle"></i><span class="text-[10px] font-bold mt-1">Akun</span>
+            </a>
+        </nav>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+        import { getDatabase, ref, onValue, remove } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyAowYbcfC9RsMCxKf2ZmwvTiLvooKaWI5U",
+            databaseURL: "https://lapak-banjarharjo-default-rtdb.asia-southeast1.firebasedatabase.app",
+            projectId: "lapak-banjarharjo"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getDatabase(app);
+
+        const myNama = localStorage.getItem('user_nama');
+        const myWa = localStorage.getItem('user_wa');
+
+        // Proteksi Halaman (Jika belum daftar, lempar ke daftar.html)
+        if (!myWa) { window.location.href = "daftar.html"; }
+
+        document.getElementById('disp-nama').innerText = myNama;
+        document.getElementById('disp-wa').innerText = myWa;
+
+        // Ambil dagangan yang WA-nya sama dengan user
+        onValue(ref(db, 'products'), (snapshot) => {
+            const data = snapshot.val();
+            const container = document.getElementById('my-products');
+            container.innerHTML = "";
+            let count = 0;
+
+            if (data) {
+                Object.keys(data).reverse().forEach(key => {
+                    const p = data[key];
+                    if (p.wa === myWa) {
+                        count++;
+                        container.innerHTML += `
+                            <div class="flex items-center gap-4 bg-white p-3 border border-gray-100 rounded-2xl shadow-sm">
+                                <img src="${p.foto}" class="w-16 h-16 object-cover rounded-xl">
+                                <div class="flex-1">
+                                    <h4 class="text-xs font-bold text-gray-800 line-clamp-1">${p.nama}</h4>
+                                    <p class="text-green-600 font-black text-xs">Rp ${Number(p.harga).toLocaleString()}</p>
+                                </div>
+                                <button onclick="hapusBarang('${key}')" class="w-10 h-10 bg-red-50 text-red-500 rounded-xl flex items-center justify-center active:bg-red-100">
+                                    <i class="fas fa-trash-alt"></i>
+                                </button>
+                            </div>
+                        `;
+                    }
+                });
+            }
+            document.getElementById('count-barang').innerText = count + " Barang";
+            if (count === 0) container.innerHTML = "<p class='text-center text-gray-400 py-10 text-xs italic'>Kamu belum punya dagangan aktif.</p>";
+        });
+
+        window.hapusBarang = async (key) => {
+            if (confirm("Sampun payu? Dagangan pan dihapus?")) {
+                await remove(ref(db, 'products/' + key));
+            }
+        };
+
+        window.logout = () => {
+            if (confirm("Ingin keluar dan ganti akun?")) {
+                localStorage.clear();
+                window.location.href = "daftar.html";
+            }
+        };
+    </script>
+</body>
+</html>
