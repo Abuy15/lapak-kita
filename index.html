@@ -9,36 +9,31 @@
     <link rel="apple-touch-icon" href="logo.png">
     <meta name="theme-color" content="#16a34a">
 
-   <link rel="manifest" href="data:application/json;base64,ewogICJzaG9ydF9uYW1lIjogIkxhcGFrS2l0YSIsCiAgIm5hbWUiOiAiTGFwYWsgQmFuamFyaGFyam8iLAogICJpY29ucyI6IFsKICAgIHsKICAgICAgInNyYyI6ICJsb2dvLnBuZz92PTIiLAogICAgICAic2l6ZXMiOiAiMTkyeDE5MiIsCiAgICAgICJ0eXBlIjogImltYWdlL3BuZyIsCiAgICAgICJwdXJwb3NlIjogImFueSIKICAgIH0sCiAgICB7CiAgICAgICJzcmMiOiAibG9nby5wbmc/dj0yIiwKICAgICAgInNpemVzIjogIjUxMng1MTIiLAogICAgICAidHlwZSI6ICJpbWFnZS9wbmciLAogICAgICAicHVycG9zZSI6ICJtYXNrYWJsZSIKICAgIH0KICBdLAogICJzdGFydF91cmwiOiAiaW5kZXguaHRtbCIsCiAgImRpc3BsYXkiOiAic3RhbmRhbG9uZSIsCiAgImJhY2tncm91bmRfY29sb3IiOiAiI2ZmZmZmZiIsCiAgInRoZW1lX2NvbG9yIjogIiMxNmEzNGEiCn0=">
+    <link rel="manifest" href="data:application/json;base64,ewogICJzaG9ydF9uYW1lIjogIkxhcGFrS2l0YSIsCiAgIm5hbWUiOiAiTGFwYWsgQmFuamFyaGFyam8iLAogICJpY29ucyI6IFsKICAgIHsKICAgICAgInNyYyI6ICJsb2dvLnBuZz92PTIiLAogICAgICAic2l6ZXMiOiAiMTkyeDE5MiIsCiAgICAgICJ0eXBlIjogImltYWdlL3BuZyIsCiAgICAgICJwdXJwb3NlIjogImFueSIKICAgIH0sCiAgICB7CiAgICAgICJzcmMiOiAibG9nby5wbmc/dj0yIiwKICAgICAgInNpemVzIjogIjUxMng1MTIiLAogICAgICAidHlwZSI6ICJpbWFnZS9wbmciLAogICAgICAicHVycG9zZSI6ICJtYXNrYWJsZSIKICAgIH0KICBdLAogICJzdGFydF91cmwiOiAiaW5kZXguaHRtbCIsCiAgImRpc3BsYXkiOiAic3RhbmRhbG9uZSIsCiAgImJhY2tncm91bmRfY29sb3IiOiAiI2ZmZmZmZiIsCiAgInRoZW1lX2NvbG9yIjogIiMxNmEzNGEiCn0=">
 
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;900&display=swap');
-        body { font-family: 'Inter', sans-serif; background-color: #f3f4f6; }
+        body { font-family: 'Inter', sans-serif; background-color: #f3f4f6; overflow-x: hidden; }
         .loader { border-top-color: #16a34a; animation: spinner 0.6s linear infinite; }
         @keyframes spinner { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
         .hide-scroll::-webkit-scrollbar { display: none; }
         .cat-active .cat-icon { background-color: #16a34a !important; color: white !important; }
         .cat-active p { color: #16a34a !important; font-weight: bold; }
-        /* Fix slider agar tidak berantakan */
         #slider-container div { min-width: 100%; flex-shrink: 0; }
     </style>
 </head>
 <body class="flex justify-center">
 
     <div class="w-full max-w-[480px] min-h-screen bg-white shadow-lg relative pb-28">
-        
         <header class="bg-green-600 p-5 text-white sticky top-0 z-50 shadow-md">
             <div class="flex justify-between items-center">
                 <div>
                     <h1 class="text-xl font-black tracking-tight">Lapak Banjarharjo</h1>
                     <p class="text-[10px] text-green-100 font-medium" id="welcome-name">Sugeng Rawuh!</p>
                 </div>
-                <div class="flex gap-4">
-                    <i class="fas fa-search text-lg"></i>
-                    <i class="fas fa-bell text-lg"></i>
-                </div>
+                <div class="flex gap-4"><i class="fas fa-search text-lg"></i><i class="fas fa-bell text-lg"></i></div>
             </div>
         </header>
 
@@ -53,7 +48,7 @@
 
         <section class="p-4 flex gap-4 overflow-x-auto hide-scroll text-center text-[10px] font-bold text-gray-600">
             <div onclick="filterProduk('Semua', this)" class="cat-item cat-active flex-shrink-0 cursor-pointer">
-                <div class="cat-icon bg-gray-100 p-4 rounded-2xl mx-auto w-14 h-14 flex items-center justify-center shadow-sm"><i class="fas fa-th-large text-xl"></i></div>
+                <div class="cat-icon bg-gray-100 p-4 rounded-2xl mx-auto w-14 h-14 flex items-center justify-center shadow-sm"><i class="fas fa-th-large text-xl text-gray-600"></i></div>
                 <p class="mt-2">Semua</p>
             </div>
             <div onclick="filterProduk('Kuliner', this)" class="cat-item flex-shrink-0 cursor-pointer">
@@ -90,10 +85,7 @@
         <nav class="fixed bottom-0 w-full max-w-[480px] bg-white border-t flex justify-around p-3 text-gray-400 shadow-[0_-2px_10px_rgba(0,0,0,0.05)] z-50">
             <a href="index.html" class="text-green-600 flex flex-col items-center"><i class="fas fa-home"></i><span class="text-[10px] font-bold mt-1">Home</span></a>
             <a href="kategori.html" class="flex flex-col items-center"><i class="fas fa-th-large"></i><span class="text-[10px] font-bold mt-1">Kategori</span></a>
-            <a href="jual.html" class="flex flex-col items-center">
-                <i class="fas fa-plus-circle text-green-600 text-5xl -mt-10 bg-white rounded-full p-1 border-[6px] border-gray-50 shadow-sm"></i>
-                <span class="text-[10px] font-bold mt-1">Jual</span>
-            </a>
+            <a href="jual.html" class="flex flex-col items-center"><i class="fas fa-plus-circle text-green-600 text-5xl -mt-10 bg-white rounded-full p-1 border-[6px] border-gray-50 shadow-sm"></i><span class="text-[10px] font-bold mt-1">Jual</span></a>
             <a href="info.html" class="flex flex-col items-center"><i class="fas fa-newspaper"></i><span class="text-[10px] font-bold mt-1">Info</span></a>
             <a href="profil.html" class="flex flex-col items-center"><i class="fas fa-user-circle"></i><span class="text-[10px] font-bold mt-1">Akun</span></a>
         </nav>
@@ -111,99 +103,59 @@
 
         const app = initializeApp(firebaseConfig);
         const db = getDatabase(app);
-        
         let allProducts = {};
-        const nomorAdmin = "6285647087424";
         const waUser = localStorage.getItem('user_wa');
         const namaUser = localStorage.getItem('user_nama');
-
         if(namaUser) document.getElementById('welcome-name').innerText = "Sugeng Rawuh, " + namaUser + "!";
 
-       // AMBIL DATA IKLAN (Hanya untuk 2 Iklan)
         onValue(ref(db, 'ads'), (snapshot) => {
             const ads = snapshot.val();
             const sliderCont = document.getElementById('slider-container');
             const dotsCont = document.getElementById('slider-dots');
             if (!ads) return;
-            
+            const keys = Object.keys(ads).sort();
             let html = ""; let dots = "";
-            // Sort supaya slide1 muncul duluan baru slide2
-            const keys = Object.keys(ads).sort(); 
-            
-            keys.forEach((key, index) => {
-                html += `
-                <div class="min-w-full w-full h-full flex-shrink-0">
-                    <a href="https://wa.me/${ads[key].link}">
-                        <img src="${ads[key].url}" class="w-full h-full object-cover">
-                    </a>
-                </div>`;
-                dots += `<div class="w-1.5 h-1.5 rounded-full bg-white/50 transition-all duration-300 dot-item"></div>`;
+            keys.forEach((key, i) => {
+                html += `<div class="min-w-full w-full h-full flex-shrink-0"><a href="https://wa.me/${ads[key].link}"><img src="${ads[key].url}" class="w-full h-full object-cover"></a></div>`;
+                dots += `<div class="w-1.5 h-1.5 rounded-full bg-white/50 dot-item"></div>`;
             });
-            
-            sliderCont.innerHTML = html;
-            dotsCont.innerHTML = dots;
-            
+            sliderCont.innerHTML = html; dotsCont.innerHTML = dots;
             let current = 0;
             const allDots = document.querySelectorAll('.dot-item');
             if(allDots.length > 0) allDots[0].classList.replace('bg-white/50', 'bg-white');
-
             if(window.adsTimer) clearInterval(window.adsTimer);
-            window.adsTimer = setInterval(() => {
-                if (sliderCont.children.length > 1) {
-                    current = (current + 1) % sliderCont.children.length;
+            if(keys.length > 1) {
+                window.adsTimer = setInterval(() => {
+                    current = (current + 1) % keys.length;
                     sliderCont.style.transform = `translateX(-${current * 100}%)`;
                     allDots.forEach((d, i) => {
                         if(i === current) d.classList.replace('bg-white/50', 'bg-white');
                         else d.classList.replace('bg-white', 'bg-white/50');
                     });
-                }
-            }, 4000);
+                }, 4000);
+            }
         });
-        // FIX IKLAN: Menghapus interval lama dan memastikan flex-shrink-0
-        onValue(ref(db, 'ads'), (snapshot) => {
-            const ads = snapshot.val();
-            const sliderCont = document.getElementById('slider-container');
-            const dotsCont = document.getElementById('slider-dots');
-            if (!ads) return;
-            
-            let html = ""; let dots = "";
-            const keys = Object.keys(ads);
-            
-            keys.forEach((key, index) => {
-                html += `<div class="min-w-full h-full flex-shrink-0 w-full"><a href="https://wa.me/${ads[key].link}"><img src="${ads[key].url}" class="w-full h-full object-cover"></a></div>`;
-                dots += `<div class="w-1.5 h-1.5 rounded-full bg-white/50 transition-all duration-300 dot-item"></div>`;
-            });
 
-        function renderProduk(kategoriDipilih) {
-            const listElement = document.getElementById('produk-list');
-            listElement.innerHTML = '';
+        onValue(ref(db, 'products'), (snapshot) => {
+            allProducts = snapshot.val() || {};
+            renderProduk('Semua');
+            document.getElementById('loading').style.display = 'none';
+        });
+
+        function renderProduk(kat) {
+            const list = document.getElementById('produk-list');
+            list.innerHTML = '';
             const keys = Object.keys(allProducts).reverse();
-            let adaBarang = false;
-
+            let ada = false;
             keys.forEach(key => {
                 const p = allProducts[key];
-                if (kategoriDipilih === 'Semua' || p.kategori === kategoriDipilih) {
-                    adaBarang = true;
-                    const fotoSrc = p.foto ? p.foto : 'https://via.placeholder.com/300?text=No+Image';
-                    const isAdmin = (waUser === nomorAdmin);
-                    const tombolHapus = (isAdmin || p.wa === waUser) ? `<button onclick="hapusProduk('${key}')" class="text-red-500 ml-2"><i class="fas fa-trash"></i></button>` : "";
-
-                    listElement.innerHTML += `
-                        <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden flex flex-col">
-                            <img src="${fotoSrc}" class="w-full aspect-square object-cover" onerror="this.src='https://via.placeholder.com/300?text=Error+Loading'">
-                            <div class="p-3">
-                                <h3 class="text-[11px] font-bold text-gray-700 line-clamp-1">${p.nama}</h3>
-                                <p class="text-green-600 font-black text-sm">Rp ${Number(p.harga).toLocaleString('id-ID')}</p>
-                                <p class="text-[9px] text-gray-400 mt-1"><i class="fas fa-map-marker-alt text-green-500"></i> ${p.desa || 'Banjarharjo'}</p>
-                                <div class="flex mt-3">
-                                    <a href="https://wa.me/${p.wa}" class="flex-1 bg-green-600 text-white text-[10px] font-bold py-2 rounded-lg text-center">Beli</a>
-                                    ${tombolHapus}
-                                </div>
-                            </div>
-                        </div>`;
+                if (kat === 'Semua' || p.kategori === kat) {
+                    ada = true;
+                    const hps = (waUser === "6285647087424" || p.wa === waUser) ? `<button onclick="hapusProduk('${key}')" class="text-red-500 ml-2"><i class="fas fa-trash"></i></button>` : "";
+                    list.innerHTML += `<div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden flex flex-col"><img src="${p.foto || 'https://via.placeholder.com/300'}" class="w-full aspect-square object-cover"><div class="p-3"><h3 class="text-[11px] font-bold text-gray-700 line-clamp-1">${p.nama}</h3><p class="text-green-600 font-black text-sm">Rp ${Number(p.harga).toLocaleString('id-ID')}</p><div class="flex mt-3"><a href="https://wa.me/${p.wa}" class="flex-1 bg-green-600 text-white text-[10px] font-bold py-2 rounded-lg text-center">Beli</a>${hps}</div></div></div>`;
                 }
             });
-            if(!adaBarang) listElement.innerHTML = `<p class="col-span-2 text-center text-gray-400 py-10">Kosong, Lur.</p>`;
+            if(!ada) list.innerHTML = `<p class="col-span-2 text-center text-gray-400 py-10">Belum ada barang, Lur.</p>`;
         }
 
         window.filterProduk = (kat, el) => {
@@ -212,8 +164,7 @@
             document.getElementById('judul-section').innerText = kat === 'Semua' ? 'Produk Terbaru' : 'Kategori ' + kat;
             renderProduk(kat);
         };
-
-        window.hapusProduk = (id) => { if(confirm("Hapus barang?")) remove(ref(db, 'products/' + id)); };
+        window.hapusProduk = (id) => { if(confirm("Hapus?")) remove(ref(db, 'products/' + id)); };
     </script>
 </body>
 </html>
