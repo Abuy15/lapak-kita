@@ -119,7 +119,7 @@
 
         if(namaUser) document.getElementById('welcome-name').innerText = "Sugeng Rawuh, " + namaUser + "!";
 
-        // FIX IKLAN: Menghapus interval lama dan memastikan flex-shrink-0
+       // AMBIL DATA IKLAN (Hanya untuk 2 Iklan)
         onValue(ref(db, 'ads'), (snapshot) => {
             const ads = snapshot.val();
             const sliderCont = document.getElementById('slider-container');
@@ -127,10 +127,16 @@
             if (!ads) return;
             
             let html = ""; let dots = "";
-            const keys = Object.keys(ads);
+            // Sort supaya slide1 muncul duluan baru slide2
+            const keys = Object.keys(ads).sort(); 
             
             keys.forEach((key, index) => {
-                html += `<div class="min-w-full h-full flex-shrink-0 w-full"><a href="https://wa.me/${ads[key].link}"><img src="${ads[key].url}" class="w-full h-full object-cover"></a></div>`;
+                html += `
+                <div class="min-w-full w-full h-full flex-shrink-0">
+                    <a href="https://wa.me/${ads[key].link}">
+                        <img src="${ads[key].url}" class="w-full h-full object-cover">
+                    </a>
+                </div>`;
                 dots += `<div class="w-1.5 h-1.5 rounded-full bg-white/50 transition-all duration-300 dot-item"></div>`;
             });
             
@@ -153,12 +159,20 @@
                 }
             }, 4000);
         });
-
-        onValue(ref(db, 'products'), (snapshot) => {
-            allProducts = snapshot.val() || {};
-            renderProduk('Semua');
-            document.getElementById('loading').style.display = 'none';
-        });
+        // FIX IKLAN: Menghapus interval lama dan memastikan flex-shrink-0
+        onValue(ref(db, 'ads'), (snapshot) => {
+            const ads = snapshot.val();
+            const sliderCont = document.getElementById('slider-container');
+            const dotsCont = document.getElementById('slider-dots');
+            if (!ads) return;
+            
+            let html = ""; let dots = "";
+            const keys = Object.keys(ads);
+            
+            keys.forEach((key, index) => {
+                html += `<div class="min-w-full h-full flex-shrink-0 w-full"><a href="https://wa.me/${ads[key].link}"><img src="${ads[key].url}" class="w-full h-full object-cover"></a></div>`;
+                dots += `<div class="w-1.5 h-1.5 rounded-full bg-white/50 transition-all duration-300 dot-item"></div>`;
+            });
 
         function renderProduk(kategoriDipilih) {
             const listElement = document.getElementById('produk-list');
