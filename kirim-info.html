@@ -111,7 +111,7 @@
             try {
                 // 1. Upload Foto jika ada
                 if (fileInput.files[0]) {
-                    const formData = new FormData();
+                    const formData = 'news' FormData();
                     formData.append("UPLOADCARE_PUB_KEY", "demopublickey");
                     formData.append("UPLOADCARE_STORE", "1");
                     formData.append("file", fileInput.files[0]);
