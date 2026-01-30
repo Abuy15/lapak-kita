@@ -5,10 +5,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Lapak Banjarharjo</title>
     
-   <link rel="icon" type="image/png" href="logo.png">
-    <link rel="apple-touch-icon" href="logo.png">
+    <link rel="icon" type="image/png" href="logo.png?v=1">
+    <link rel="apple-touch-icon" href="logo-baru.png?v=1">
     <meta name="theme-color" content="#16a34a">
-    
+
+    <link rel="manifest" href="data:application/json;base64,ewogICJzaG9ydF9uYW1lIjogIkxhcGFrS2l0YSIsCiAgIm5hbWUiOiAiTGFwYWsgQmFuamFyaGFyam8iLAogICJpY29ucyI6IFsKICAgIHsKICAgICAgInNyYyI6ICJsb2dvLnBuZyIsCiAgICAgICJzaXplcyI6ICIxOTJ4MTkyIiwKICAgICAgInR5cGUiOiAiaW1hZ2UvcG5nIgogICAgfSwKICAgIHsKICAgICAgInNyYyI6ICJsb2dvLnBuZyIsCiAgICAgICJzaXplcyI6ICI1MTJ4NTEyIiwKICAgICAgInR5cGUiOiAiaW1hZ2UvcG5nIgogICAgfQogIF0sCiAgInN0YXJ0X3VybCI6ICJpbmRleC5odG1sIiwKICAiYmFja2dyb3VuZF9jb2xvciI6ICIjZmZmZmZmIiwKICAiZGlzcGxheSI6ICJzdGFuZGFsb25lIiwKICAidGhlbWVfY29sb3IiOiAiIzE2YTM0YSIKfQ==">
+
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
@@ -18,6 +20,7 @@
         @keyframes spinner { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
         .hide-scroll::-webkit-scrollbar { display: none; }
         .cat-active .cat-icon { background-color: #16a34a !important; color: white !important; }
+        .cat-active p { color: #16a34a !important; font-weight: bold; }
     </style>
 </head>
 <body class="flex justify-center">
@@ -48,29 +51,28 @@
 
         <section class="p-4 flex gap-4 overflow-x-auto hide-scroll text-center text-[10px] font-bold text-gray-600">
             <div onclick="filterProduk('Semua', this)" class="cat-item cat-active flex-shrink-0 cursor-pointer">
-                <div class="cat-icon bg-gray-100 p-4 rounded-2xl mx-auto w-14 h-14 flex items-center justify-center transition-all shadow-sm"><i class="fas fa-th-large text-xl"></i></div>
+                <div class="cat-icon bg-gray-100 p-4 rounded-2xl mx-auto w-14 h-14 flex items-center justify-center shadow-sm"><i class="fas fa-th-large text-xl"></i></div>
                 <p class="mt-2">Semua</p>
             </div>
             <div onclick="filterProduk('Kuliner', this)" class="cat-item flex-shrink-0 cursor-pointer">
-                <div class="cat-icon bg-orange-100 p-4 rounded-2xl mx-auto w-14 h-14 flex items-center justify-center transition-all shadow-sm"><i class="fas fa-utensils text-xl text-orange-600"></i></div>
+                <div class="cat-icon bg-orange-100 p-4 rounded-2xl mx-auto w-14 h-14 flex items-center justify-center shadow-sm"><i class="fas fa-utensils text-xl text-orange-600"></i></div>
                 <p class="mt-2">Kuliner</p>
             </div>
             <div onclick="filterProduk('Elektronik', this)" class="cat-item flex-shrink-0 cursor-pointer">
-                <div class="cat-icon bg-blue-100 p-4 rounded-2xl mx-auto w-14 h-14 flex items-center justify-center transition-all shadow-sm"><i class="fas fa-mobile-alt text-xl text-blue-600"></i></div>
+                <div class="cat-icon bg-blue-100 p-4 rounded-2xl mx-auto w-14 h-14 flex items-center justify-center shadow-sm"><i class="fas fa-mobile-alt text-xl text-blue-600"></i></div>
                 <p class="mt-2">Elektronik</p>
             </div>
             <div onclick="filterProduk('Fashion', this)" class="cat-item flex-shrink-0 cursor-pointer">
-                <div class="cat-icon bg-pink-100 p-4 rounded-2xl mx-auto w-14 h-14 flex items-center justify-center transition-all shadow-sm"><i class="fas fa-tshirt text-xl text-pink-600"></i></div>
+                <div class="cat-icon bg-pink-100 p-4 rounded-2xl mx-auto w-14 h-14 flex items-center justify-center shadow-sm"><i class="fas fa-tshirt text-xl text-pink-600"></i></div>
                 <p class="mt-2">Fashion</p>
             </div>
             <div onclick="filterProduk('Otomotif', this)" class="cat-item flex-shrink-0 cursor-pointer">
-                <div class="cat-icon bg-indigo-100 p-4 rounded-2xl mx-auto w-14 h-14 flex items-center justify-center transition-all shadow-sm"><i class="fas fa-motorcycle text-xl text-blue-600"></i></div>
+                <div class="cat-icon bg-indigo-100 p-4 rounded-2xl mx-auto w-14 h-14 flex items-center justify-center shadow-sm"><i class="fas fa-motorcycle text-xl text-indigo-600"></i></div>
                 <p class="mt-2">Otomotif</p>
             </div>
             <div onclick="filterProduk('Jasa', this)" class="cat-item flex-shrink-0 cursor-pointer">
-                <div class="cat-icon bg-cyan-100 p-4 rounded-2xl mx-auto w-14 h-14 flex items-center justify-center transition-all shadow-sm"><i class="fas fa-briefcase text-xl text-blue-600"></i></div>
+                <div class="cat-icon bg-cyan-100 p-4 rounded-2xl mx-auto w-14 h-14 flex items-center justify-center shadow-sm"><i class="fas fa-briefcase text-xl text-cyan-600"></i></div>
                 <p class="mt-2">Jasa</p>
-            
             </div>
         </section>
 
@@ -91,7 +93,7 @@
                 <span class="text-[10px] font-bold mt-1">Jual</span>
             </a>
             <a href="info.html" class="flex flex-col items-center"><i class="fas fa-newspaper"></i><span class="text-[10px] font-bold mt-1">Info</span></a>
-            <a href="profil.html" id="link-akun" class="flex flex-col items-center"><i class="fas fa-user-circle"></i><span class="text-[10px] font-bold mt-1">Akun</span></a>
+            <a href="profil.html" class="flex flex-col items-center"><i class="fas fa-user-circle"></i><span class="text-[10px] font-bold mt-1">Akun</span></a>
         </nav>
     </div>
 
@@ -113,29 +115,39 @@
         const waUser = localStorage.getItem('user_wa');
         const namaUser = localStorage.getItem('user_nama');
 
-        // Tampilkan nama di header
-        if(namaUser) {
-            document.getElementById('welcome-name').innerText = "Sugeng Rawuh, " + namaUser + "!";
-        }
+        if(namaUser) document.getElementById('welcome-name').innerText = "Sugeng Rawuh, " + namaUser + "!";
 
-        // AMBIL DATA IKLAN
+        // AMBIL DATA IKLAN (DENGAN LOGIKA GESER)
         onValue(ref(db, 'ads'), (snapshot) => {
             const ads = snapshot.val();
             const sliderCont = document.getElementById('slider-container');
             const dotsCont = document.getElementById('slider-dots');
             if (!ads) return;
+            
             let html = ""; let dots = "";
             const keys = Object.keys(ads);
+            
             keys.forEach((key, index) => {
-                html += `<div class="min-w-full h-full"><a href="https://wa.me/${ads[key].link}"><img src="${ads[key].url}" class="w-full h-full object-cover"></a></div>`;
-                dots += `<div class="w-1.5 h-1.5 rounded-full bg-white/50"></div>`;
+                html += `<div class="min-w-full h-full flex-shrink-0"><a href="https://wa.me/${ads[key].link}"><img src="${ads[key].url}" class="w-full h-full object-cover"></a></div>`;
+                dots += `<div class="w-1.5 h-1.5 rounded-full bg-white/50 transition-all duration-300 dot-item"></div>`;
             });
+            
             sliderCont.innerHTML = html;
             dotsCont.innerHTML = dots;
+            
             let current = 0;
+            const allDots = document.querySelectorAll('.dot-item');
+            if(allDots.length > 0) allDots[0].classList.replace('bg-white/50', 'bg-white');
+
             setInterval(() => {
-                current = (current + 1) % sliderCont.children.length;
-                sliderCont.style.transform = `translateX(-${current * 100}%)`;
+                if (sliderCont.children.length > 1) {
+                    current = (current + 1) % sliderCont.children.length;
+                    sliderCont.style.transform = `translateX(-${current * 100}%)`;
+                    allDots.forEach((d, i) => {
+                        if(i === current) d.classList.replace('bg-white/50', 'bg-white');
+                        else d.classList.replace('bg-white', 'bg-white/50');
+                    });
+                }
             }, 4000);
         });
 
@@ -166,7 +178,7 @@
                             <div class="p-3">
                                 <h3 class="text-[11px] font-bold text-gray-700 line-clamp-1">${p.nama}</h3>
                                 <p class="text-green-600 font-black text-sm">Rp ${Number(p.harga).toLocaleString('id-ID')}</p>
-                                <p class="text-[9px] text-gray-400 mt-1"><i class="fas fa-map-marker-alt text-green-500"></i> ${p.desa}</p>
+                                <p class="text-[9px] text-gray-400 mt-1"><i class="fas fa-map-marker-alt text-green-500"></i> ${p.desa || 'Banjarharjo'}</p>
                                 <div class="flex mt-3">
                                     <a href="https://wa.me/${p.wa}" class="flex-1 bg-green-600 text-white text-[10px] font-bold py-2 rounded-lg text-center">Beli</a>
                                     ${tombolHapus}
