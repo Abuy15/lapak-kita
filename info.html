@@ -9,10 +9,9 @@
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap');
         body { font-family: 'Inter', sans-serif; background-color: #f3f4f6; }
-        .bottom-nav { position: fixed; bottom: 0; width: 100%; max-width: 480px; }
-        .line-clamp-2 { display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
         .loader { border-top-color: #16a34a; animation: spinner 0.6s linear infinite; }
         @keyframes spinner { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        .line-clamp-2 { display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
     </style>
 </head>
 <body class="flex justify-center">
@@ -20,11 +19,10 @@
     <div class="w-full max-w-[480px] min-h-screen bg-white shadow-lg pb-24 relative">
         
         <header class="bg-green-600 p-4 text-white sticky top-0 z-20 flex items-center gap-4 shadow-md">
-            <a href="index.html" class="active:scale-90 transition-transform"><i class="fas fa-arrow-left"></i></a>
-            <h1 class="text-xl font-bold uppercase tracking-tight">Info Banjarharjo</h1>
+            <h1 class="text-xl font-bold uppercase tracking-tight italic">Info Banjarharjo</h1>
         </header>
 
-        <div class="m-4 p-5 bg-gradient-to-br from-orange-500 to-red-600 rounded-3xl text-white shadow-xl">
+        <div class="m-4 p-5 bg-gradient-to-br from-green-600 to-green-800 rounded-3xl text-white shadow-xl">
             <div class="flex justify-between items-start">
                 <div>
                     <p class="text-xs opacity-80 font-medium mb-1 uppercase tracking-wider" id="nama-hari">Memuat hari...</p>
@@ -37,28 +35,13 @@
             </div>
         </div>
 
-        <div class="px-4 mb-6">
-            <a href="kirim-info.html" class="flex items-center justify-between bg-green-50 p-4 rounded-2xl border border-green-200 hover:bg-green-100 transition-all active:scale-95 shadow-sm">
-                <div class="flex items-center gap-3">
-                    <div class="bg-green-600 text-white w-10 h-10 rounded-full flex items-center justify-center shadow-md">
-                        <i class="fas fa-edit"></i>
-                    </div>
-                    <div>
-                        <p class="text-sm font-bold text-green-800">Punya info untuk warga?</p>
-                        <p class="text-[11px] text-green-600">Klik di sini untuk kirim kabar desa</p>
-                    </div>
-                </div>
-                <i class="fas fa-chevron-right text-green-400"></i>
-            </a>
-        </div>
-
         <section class="p-4">
-            <h3 class="font-bold text-gray-800 mb-4 flex items-center gap-2 px-1 text-lg">
+            <h3 class="font-bold text-gray-800 mb-4 flex items-center gap-2 px-1 text-lg border-b pb-2">
                 <i class="fas fa-newspaper text-green-600"></i> Kabar Terkini
             </h3>
 
             <div id="loading-info" class="flex flex-col items-center py-10">
-                <div class="loader ease-linear rounded-full border-4 border-t-4 border-gray-100 h-8 w-8 mb-2 border-t-green-600"></div>
+                <div class="loader ease-linear rounded-full border-4 border-gray-100 h-8 w-8 mb-2"></div>
                 <p class="text-xs text-gray-400 font-medium">Ngunduh kabar desa...</p>
             </div>
             
@@ -66,15 +49,20 @@
                 </div>
         </section>
 
-        <nav class="bottom-nav bg-white/90 backdrop-blur-md border-t flex justify-around p-3 text-gray-400 shadow-[0_-5px_15px_rgba(0,0,0,0.05)] z-20">
-            <a href="index.html" class="flex flex-col items-center"><i class="fas fa-home"></i><span class="text-[10px] font-bold">Home</span></a>
-            <a href="kategori.html" class="flex flex-col items-center"><i class="fas fa-th-large"></i><span class="text-[10px] font-bold">Kategori</span></a>
-            <a href="jual.html" class="flex flex-col items-center scale-110">
-                <i class="fas fa-plus-circle text-green-600 text-5xl -mt-9 bg-white rounded-full p-1 border-[6px] border-gray-50 shadow-sm"></i>
+        <nav class="fixed bottom-0 w-full max-w-[480px] bg-white border-t flex justify-around p-3 text-gray-400 text-xl z-[9999] shadow-inner">
+            <a href="index.html" class="flex flex-col items-center flex-1">
+                <i class="fas fa-home text-lg"></i><span class="text-[10px] font-bold mt-1">Home</span>
+            </a>
+            <a href="info.html" class="text-green-600 flex flex-col items-center flex-1">
+                <i class="fas fa-newspaper text-lg"></i><span class="text-[10px] font-bold mt-1">Info</span>
+            </a>
+            <a href="jual.html" class="flex flex-col items-center flex-1 relative">
+                <i class="fas fa-plus-circle text-green-600 text-5xl -mt-10 bg-white rounded-full p-1 border-[6px] border-gray-50 shadow-sm"></i>
                 <span class="text-[10px] font-bold mt-1">Jual</span>
             </a>
-            <a href="info.html" class="text-green-600 flex flex-col items-center"><i class="fas fa-newspaper"></i><span class="text-[10px] font-bold">Info Desa</span></a>
-            <a href="login.html" class="flex flex-col items-center"><i class="fas fa-user-circle"></i><span class="text-[10px] font-bold">Akun</span></a>
+            <a href="profil.html" class="flex flex-col items-center flex-1">
+                <i class="fas fa-user-circle text-lg"></i><span class="text-[10px] font-bold mt-1">Akun</span>
+            </a>
         </nav>
     </div>
 
@@ -94,37 +82,36 @@
         const listInfo = document.getElementById('list-info');
         const loading = document.getElementById('loading-info');
 
-        // Tarik data dari folder 'info_desa'
-        onValue(ref(db, 'info_desa'), (snapshot) => {
+        // AMBIL DATA DARI FIREBASE (Folder 'news')
+        onValue(ref(db, 'news'), (snapshot) => {
             loading.style.display = 'none';
             const data = snapshot.val();
             listInfo.innerHTML = "";
 
             if (!data) {
-                listInfo.innerHTML = `<p class="text-center text-gray-400 text-xs py-10">Belum ada info terbaru, Lur.</p>`;
+                listInfo.innerHTML = `<p class="text-center text-gray-400 text-xs py-10 italic">Belum ada info terbaru, Lur.</p>`;
                 return;
             }
 
-            // Urutkan supaya yang paling baru di paling atas
-            const entries = Object.entries(data).reverse();
-            
-            entries.forEach(([key, info]) => {
-                const fotoTampil = info.foto ? info.foto : 'https://via.placeholder.com/100?text=INFO';
+            Object.keys(data).reverse().forEach(key => {
+                const info = data[key];
+                const fotoTampil = info.foto ? info.foto : 'https://via.placeholder.com/150?text=Lapak+Banjarharjo';
                 
                 listInfo.innerHTML += `
-                    <div class="flex gap-4 border-b border-gray-100 pb-4 animate-fade-in">
+                    <div class="flex gap-4 border-b border-gray-100 pb-4">
                         <img src="${fotoTampil}" class="w-20 h-20 rounded-2xl object-cover shadow-sm bg-gray-50">
                         <div class="flex-1">
-                            <span class="text-[9px] bg-green-100 text-green-700 px-2 py-0.5 rounded-full font-black uppercase">${info.kategori || 'Warga'}</span>
+                            <span class="text-[9px] bg-green-100 text-green-700 px-2 py-0.5 rounded-full font-black uppercase">${info.kategori || 'Info'}</span>
                             <h4 class="text-sm font-bold mt-1 text-gray-800 leading-snug line-clamp-2">${info.judul}</h4>
-                            <p class="text-[10px] text-gray-400 mt-2 font-medium"><i class="far fa-clock mr-1"></i>${info.waktu || 'Baru saja'}</p>
+                            <p class="text-[11px] text-gray-500 mt-1 line-clamp-1">${info.isi}</p>
+                            <p class="text-[9px] text-gray-400 mt-2 font-medium"><i class="far fa-clock mr-1"></i>${info.tanggal || 'Baru saja'}</p>
                         </div>
                     </div>
                 `;
             });
         });
 
-        // Waktu & Pasaran
+        // FUNGSI PASARAN JAWA & JAM
         function getPasaran(date) {
             const pasaran = ['Legi', 'Pahing', 'Pon', 'Wage', 'Kliwon'];
             const tglReferensi = new Date(1970, 0, 1);
@@ -136,13 +123,16 @@
             const sekarang = new Date();
             const hariNama = sekarang.toLocaleDateString('id-ID', { weekday: 'long' });
             const pasaranNama = getPasaran(sekarang);
-            document.getElementById('nama-hari').innerText = `${hariNama} ${pasaranNama}`;
             const tglOptions = { day: 'numeric', month: 'long', year: 'numeric' };
+            
+            document.getElementById('nama-hari').innerText = `${hariNama} ${pasaranNama}`;
             document.getElementById('tanggal-sekarang').innerText = sekarang.toLocaleDateString('id-ID', tglOptions);
+            
             const jam = String(sekarang.getHours()).padStart(2, '0');
             const menit = String(sekarang.getMinutes()).padStart(2, '0');
             document.getElementById('jam-sekarang').innerText = `${jam}:${menit}`;
         }
+
         setInterval(updateWaktu, 1000);
         updateWaktu();
     </script>
