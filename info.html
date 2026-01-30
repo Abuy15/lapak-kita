@@ -96,10 +96,11 @@
         </nav>
     </div>
 
-    <script type="module">
+   <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
         import { getDatabase, ref, onValue, remove } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
 
+        // 1. KONFIGURASI FIREBASE
         const firebaseConfig = {
             apiKey: "AIzaSyAowYbcfC9RsMCxKf2ZmwvTiLvooKaWI5U",
             databaseURL: "https://lapak-banjarharjo-default-rtdb.asia-southeast1.firebasedatabase.app",
@@ -110,7 +111,7 @@
         const db = getDatabase(app);
         const listInfo = document.getElementById('list-info');
 
-        // AMBIL DATA DARI FIREBASE
+        // 2. AMBIL DATA & TAMPILKAN (Sudah Termasuk Tombol Share & Hapus)
         onValue(ref(db, 'news'), (snapshot) => {
             const data = snapshot.val();
             listInfo.innerHTML = "";
@@ -122,21 +123,27 @@
                         ? `<img src="${info.foto}" class="w-20 h-20 rounded-2xl object-cover shadow-sm flex-shrink-0 bg-gray-50">`
                         : `<div class="w-20 h-20 bg-green-50 rounded-2xl flex items-center justify-center text-green-600 border border-green-100 shadow-sm flex-shrink-0"><i class="fas fa-newspaper text-2xl"></i></div>`;
 
+                    // Bersihkan tanda petik agar tidak error saat dikirim ke fungsi
+                    const judulAman = (info.judul || '').replace(/'/g, "\\'");
+                    const isiAman = (info.isi || '').replace(/'/g, "\\'");
+
                     listInfo.innerHTML += `
                         <div class="flex gap-4 border-b border-gray-100 pb-4 animate-fade-in relative">
                             ${fotoHtml}
                             <div class="flex-1">
                                 <div class="flex justify-between items-start">
                                     <span class="text-[9px] bg-blue-100 text-blue-600 px-2 py-0.5 rounded-full font-black uppercase">${info.kategori || 'Warga'}</span>
-                                    
-                                    <button onclick="hapusInfo('${key}')" class="text-gray-300 hover:text-red-500 transition-colors p-1">
-                                        <i class="fas fa-trash-alt text-xs"></i>
-                                    </button>
+                                    <div class="flex gap-3 items-center">
+                                        <button onclick="shareWA('${judulAman}', '${isiAman}')" class="text-gray-300 hover:text-green-600 active:scale-125 transition-all p-1">
+                                            <i class="fab fa-whatsapp text-sm"></i>
+                                        </button>
+                                        <button onclick="hapusInfo('${key}')" class="text-gray-300 hover:text-red-500 active:scale-125 transition-all p-1">
+                                            <i class="fas fa-trash-alt text-xs"></i>
+                                        </button>
+                                    </div>
                                 </div>
                                 <h4 class="text-sm font-bold mt-1 text-gray-800 leading-snug line-clamp-1">${info.judul}</h4>
-                                
                                 <p class="text-[11px] text-gray-500 mt-1 leading-relaxed line-clamp-3">${info.isi || ''}</p>
-                                
                                 <p class="text-[9px] text-gray-400 mt-2 font-medium"><i class="far fa-clock mr-1"></i>${info.tanggal || 'Baru saja'}</p>
                             </div>
                         </div>
@@ -147,23 +154,27 @@
             }
         });
 
-        // FUNGSI HAPUS ADMIN
-        window.hapusInfo = (key) => {
-            const pinAdmin = "150888"; // GANTI PIN SESUKA HATI
-            const konfirmasiPin = prompt("Masukkan PIN Admin untuk menghapus kabar ini:");
+        // 3. FUNGSI SHARE KE WHATSAPP
+        window.shareWA = (judul, isi) => {
+            const linkWeb = "https://lapak-kita.vercel.app/info.html";
+            const teksPesan = `*KABAR BANJARHARJO*%0A%0A*Judul:* ${judul}%0A*Isi:* ${isi.substring(0, 100)}...%0A%0ACek selengkapnya di sini:%0A${linkWeb}`;
+            window.open(`https://api.whatsapp.com/send?text=${teksPesan}`, '_blank');
+        };
 
+        // 4. FUNGSI HAPUS ADMIN (PIN: 150888)
+        window.hapusInfo = (key) => {
+            const pinAdmin = "150888"; 
+            const konfirmasiPin = prompt("Masukkan PIN Admin untuk menghapus:");
             if (konfirmasiPin === pinAdmin) {
-                if (confirm("Yakin kabar ini mau dihapus selamanya, Lur?")) {
-                    remove(ref(db, 'news/' + key))
-                    .then(() => alert("Kabar sudah dibersihkan!"))
-                    .catch((err) => alert("Gagal hapus: " + err.message));
+                if (confirm("Yakin mau dihapus, Lur?")) {
+                    remove(ref(db, 'news/' + key)).then(() => alert("Terhapus!"));
                 }
             } else if (konfirmasiPin !== null) {
-                alert("PIN Salah! Hanya admin yang bisa menghapus.");
+                alert("PIN Salah!");
             }
         };
 
-        // FUNGSI WAKTU & PASARAN
+        // 5. FUNGSI WAKTU & PASARAN
         function getPasaran(date) {
             const pasaran = ['Legi', 'Pahing', 'Pon', 'Wage', 'Kliwon'];
             const tglReferensi = new Date(1970, 0, 1);
@@ -176,11 +187,14 @@
             const hariNama = sekarang.toLocaleDateString('id-ID', { weekday: 'long' });
             const pasaranNama = getPasaran(sekarang);
             const tglOptions = { day: 'numeric', month: 'long', year: 'numeric' };
-            document.getElementById('nama-hari').innerText = `${hariNama} ${pasaranNama}`;
-            document.getElementById('tanggal-sekarang').innerText = sekarang.toLocaleDateString('id-ID', tglOptions);
-            const jam = String(sekarang.getHours()).padStart(2, '0');
-            const menit = String(sekarang.getMinutes()).padStart(2, '0');
-            document.getElementById('jam-sekarang').innerText = `${jam}:${menit}`;
+            
+            const elHari = document.getElementById('nama-hari');
+            const elTgl = document.getElementById('tanggal-sekarang');
+            const elJam = document.getElementById('jam-sekarang');
+            
+            if(elHari) elHari.innerText = `${hariNama} ${pasaranNama}`;
+            if(elTgl) elTgl.innerText = sekarang.toLocaleDateString('id-ID', tglOptions);
+            if(elJam) elJam.innerText = String(sekarang.getHours()).padStart(2, '0') + ":" + String(sekarang.getMinutes()).padStart(2, '0');
         }
 
         setInterval(updateWaktu, 1000);
