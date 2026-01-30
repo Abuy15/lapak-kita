@@ -8,19 +8,20 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;900&display=swap');
-        body { font-family: 'Inter', sans-serif; }
+        body { font-family: 'Inter', sans-serif; background-color: #f3f4f6; }
+        .hide-scroll::-webkit-scrollbar { display: none; }
     </style>
 </head>
-<body class="bg-gray-50 flex justify-center">
-    <div class="w-full max-w-[480px] min-h-screen bg-white shadow-lg pb-24">
+<body class="flex justify-center">
+    <div class="w-full max-w-[480px] min-h-screen bg-white shadow-lg pb-28 relative">
         
         <div class="bg-green-600 p-8 pt-12 rounded-b-[40px] text-white text-center shadow-lg relative overflow-hidden">
             <div class="relative z-10">
                 <div class="w-24 h-24 bg-white/20 backdrop-blur-md rounded-[35px] flex items-center justify-center mx-auto mb-4 border-2 border-white/30 shadow-xl">
                     <i class="fas fa-user text-4xl"></i>
                 </div>
-                <h2 id="disp-nama" class="text-xl font-black italic">Nama Warga</h2>
-                <p id="disp-wa" class="text-green-100 text-sm font-medium">08123xxx</p>
+                <h2 id="disp-nama" class="text-xl font-black italic">Memuat Nama...</h2>
+                <p id="disp-wa" class="text-green-100 text-sm font-medium">08xxx</p>
                 <span class="inline-block bg-yellow-400 text-green-900 text-[9px] font-black px-3 py-1 rounded-full mt-3 uppercase">Member Banjarharjo</span>
             </div>
             <div class="absolute -top-10 -right-10 w-32 h-32 bg-white/10 rounded-full"></div>
@@ -33,19 +34,19 @@
             </div>
 
             <div id="my-products" class="space-y-4">
-                <p class="text-center text-gray-400 py-10 text-xs italic">Lagi loading data daganganmu...</p>
+                <p class="text-center text-gray-400 py-10 text-xs italic">Mencari daganganmu...</p>
             </div>
 
             <hr class="my-8 border-gray-100">
 
-            <button onclick="logout()" class="w-full p-4 text-red-500 font-bold text-sm bg-red-50 rounded-2xl flex items-center justify-center gap-2 active:bg-red-100 transition-all border border-red-100">
+            <button onclick="logout()" class="w-full p-4 text-red-500 font-bold text-sm bg-red-50 rounded-2xl flex items-center justify-center gap-2 active:scale-95 transition-all border border-red-100">
                 <i class="fas fa-sign-out-alt"></i> Keluar / Ganti Akun
             </button>
         </main>
 
         <nav class="fixed bottom-0 w-full max-w-[480px] bg-white border-t flex justify-around p-3 text-gray-400 text-xl z-[9999]">
             <a href="index.html" class="flex flex-col items-center flex-1">
-                <i class="fas fa-home text-gray-300"></i><span class="text-[10px] font-bold mt-1">Home</span>
+                <i class="fas fa-home"></i><span class="text-[10px] font-bold mt-1">Home</span>
             </a>
             <a href="info.html" class="flex flex-col items-center flex-1">
                 <i class="fas fa-newspaper"></i><span class="text-[10px] font-bold mt-1">Info</span>
@@ -73,56 +74,60 @@
         const app = initializeApp(firebaseConfig);
         const db = getDatabase(app);
 
-        const myNama = localStorage.getItem('user_nama');
+        const myNama = localStorage.getItem('user_nama') || "Warga Banjarharjo";
         const myWa = localStorage.getItem('user_wa');
 
-        // Proteksi Halaman (Jika belum daftar, lempar ke daftar.html)
-        if (!myWa) { window.location.href = "daftar.html"; }
-
+        // Isi data ke layar
         document.getElementById('disp-nama').innerText = myNama;
-        document.getElementById('disp-wa').innerText = myWa;
+        document.getElementById('disp-wa').innerText = myWa || "Belum Login";
 
-        // Ambil dagangan yang WA-nya sama dengan user
-        onValue(ref(db, 'products'), (snapshot) => {
-            const data = snapshot.val();
-            const container = document.getElementById('my-products');
-            container.innerHTML = "";
-            let count = 0;
+        // Tampilkan dagangan jika sudah login
+        if (myWa) {
+            onValue(ref(db, 'products'), (snapshot) => {
+                const data = snapshot.val();
+                const container = document.getElementById('my-products');
+                container.innerHTML = "";
+                let count = 0;
 
-            if (data) {
-                Object.keys(data).reverse().forEach(key => {
-                    const p = data[key];
-                    if (p.wa === myWa) {
-                        count++;
-                        container.innerHTML += `
-                            <div class="flex items-center gap-4 bg-white p-3 border border-gray-100 rounded-2xl shadow-sm">
-                                <img src="${p.foto}" class="w-16 h-16 object-cover rounded-xl">
-                                <div class="flex-1">
-                                    <h4 class="text-xs font-bold text-gray-800 line-clamp-1">${p.nama}</h4>
-                                    <p class="text-green-600 font-black text-xs">Rp ${Number(p.harga).toLocaleString()}</p>
+                if (data) {
+                    Object.keys(data).reverse().forEach(key => {
+                        const p = data[key];
+                        // Cek apakah nomor WA di database sama dengan WA di HP
+                        if (String(p.wa) === String(myWa)) {
+                            count++;
+                            container.innerHTML += `
+                                <div class="flex items-center gap-4 bg-white p-3 border border-gray-100 rounded-2xl shadow-sm">
+                                    <img src="${p.foto}" class="w-16 h-16 object-cover rounded-xl" onerror="this.src='https://via.placeholder.com/150'">
+                                    <div class="flex-1">
+                                        <h4 class="text-xs font-bold text-gray-800 line-clamp-1">${p.nama}</h4>
+                                        <p class="text-green-600 font-black text-xs">Rp ${Number(p.harga).toLocaleString('id-ID')}</p>
+                                    </div>
+                                    <button onclick="hapusBarang('${key}')" class="w-10 h-10 bg-red-50 text-red-500 rounded-xl flex items-center justify-center active:bg-red-100">
+                                        <i class="fas fa-trash-alt"></i>
+                                    </button>
                                 </div>
-                                <button onclick="hapusBarang('${key}')" class="w-10 h-10 bg-red-50 text-red-500 rounded-xl flex items-center justify-center active:bg-red-100">
-                                    <i class="fas fa-trash-alt"></i>
-                                </button>
-                            </div>
-                        `;
-                    }
-                });
-            }
-            document.getElementById('count-barang').innerText = count + " Barang";
-            if (count === 0) container.innerHTML = "<p class='text-center text-gray-400 py-10 text-xs italic'>Kamu belum punya dagangan aktif.</p>";
-        });
+                            `;
+                        }
+                    });
+                }
+                document.getElementById('count-barang').innerText = count + " Barang";
+                if (count === 0) container.innerHTML = "<p class='text-center text-gray-400 py-10 text-xs italic'>Kamu belum punya dagangan aktif.</p>";
+            });
+        } else {
+            document.getElementById('my-products').innerHTML = "<p class='text-center text-red-500 py-10 text-xs font-bold'>Silakan login/daftar untuk jualan.</p>";
+        }
 
-        window.hapusBarang = async (key) => {
+        // Global function agar bisa dipanggil HTML
+        window.hapusBarang = (key) => {
             if (confirm("Sampun payu? Dagangan pan dihapus?")) {
-                await remove(ref(db, 'products/' + key));
+                remove(ref(db, 'products/' + key));
             }
         };
 
         window.logout = () => {
-            if (confirm("Ingin keluar dan ganti akun?")) {
+            if (confirm("Yakin ingin keluar?")) {
                 localStorage.clear();
-                window.location.href = "daftar.html";
+                window.location.href = "index.html";
             }
         };
     </script>
