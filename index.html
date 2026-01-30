@@ -1,14 +1,15 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-   <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Lapak Banjarharjo</title>
     
-    <link rel="icon" type="image/png" sizes="192x192" href="logo.png">
+    <link rel="icon" type="image/png" href="logo.png">
     <link rel="apple-touch-icon" href="logo.png">
     <meta name="theme-color" content="#16a34a">
+
+    <link rel="manifest" href="data:application/json;base64,ewogICJzaG9ydF9uYW1lIjogIkxhcGFrIEJhanFyIiwKICAibmFtZSI6ICJMYXBhayBCYW5qYXJoYXJqbyIsCiAgImljb25zIjogWwogICAgewogICAgICAic3JjIjogImxvZ28ucG5nIiwKICAgICAgInNpemVzIjogIjE5MngxOTIiLAogICAgICAidHlwZSI6ICJpbWFnZS9wbmciLAogICAgICAicHVycG9zZSI6ICJhbnkiCiAgICB9LAogICAgewogICAgICAic3JjIjogImxvZ28ucG5nIiwKICAgICAgInNpemVzIjogIjUxMng1MTIiLAogICAgICAidHlwZSI6ICJpbWFnZS9wbmciLAogICAgICAicHVycG9zZSI6ICJtYXNrYWJsZSIKICAgIH0KICBdLAogICJzdGFydF91cmwiOiAiaW5kZXguaHRtbCIsCiAgImRpc3BsYXkiOiAic3RhbmRhbG9uZSIsCiAgImJhY2tncm91bmRfY29sb3IiOiAiI2ZmZmZmZiIsCiAgInRoZW1lX2NvbG9yIjogIiMxNmEzNGEiCn0=">
 
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
@@ -20,6 +21,8 @@
         .hide-scroll::-webkit-scrollbar { display: none; }
         .cat-active .cat-icon { background-color: #16a34a !important; color: white !important; }
         .cat-active p { color: #16a34a !important; font-weight: bold; }
+        /* Fix slider agar tidak berantakan */
+        #slider-container div { min-width: 100%; flex-shrink: 0; }
     </style>
 </head>
 <body class="flex justify-center">
@@ -41,7 +44,7 @@
 
         <div class="px-4 pt-4">
             <div class="relative overflow-hidden rounded-3xl shadow-sm border border-gray-100 h-44 bg-gray-50">
-                <div id="slider-container" class="flex transition-transform duration-500 h-full">
+                <div id="slider-container" class="flex transition-transform duration-500 h-full w-full">
                     <div class="min-w-full h-full flex items-center justify-center text-gray-400 text-xs italic">Memuat Iklan...</div>
                 </div>
                 <div class="absolute bottom-3 left-1/2 -translate-x-1/2 flex gap-1.5" id="slider-dots"></div>
@@ -116,7 +119,7 @@
 
         if(namaUser) document.getElementById('welcome-name').innerText = "Sugeng Rawuh, " + namaUser + "!";
 
-        // AMBIL DATA IKLAN (DENGAN LOGIKA GESER)
+        // FIX IKLAN: Menghapus interval lama dan memastikan flex-shrink-0
         onValue(ref(db, 'ads'), (snapshot) => {
             const ads = snapshot.val();
             const sliderCont = document.getElementById('slider-container');
@@ -127,7 +130,7 @@
             const keys = Object.keys(ads);
             
             keys.forEach((key, index) => {
-                html += `<div class="min-w-full h-full flex-shrink-0"><a href="https://wa.me/${ads[key].link}"><img src="${ads[key].url}" class="w-full h-full object-cover"></a></div>`;
+                html += `<div class="min-w-full h-full flex-shrink-0 w-full"><a href="https://wa.me/${ads[key].link}"><img src="${ads[key].url}" class="w-full h-full object-cover"></a></div>`;
                 dots += `<div class="w-1.5 h-1.5 rounded-full bg-white/50 transition-all duration-300 dot-item"></div>`;
             });
             
@@ -138,7 +141,8 @@
             const allDots = document.querySelectorAll('.dot-item');
             if(allDots.length > 0) allDots[0].classList.replace('bg-white/50', 'bg-white');
 
-            setInterval(() => {
+            if(window.adsTimer) clearInterval(window.adsTimer);
+            window.adsTimer = setInterval(() => {
                 if (sliderCont.children.length > 1) {
                     current = (current + 1) % sliderCont.children.length;
                     sliderCont.style.transform = `translateX(-${current * 100}%)`;
@@ -150,7 +154,6 @@
             }, 4000);
         });
 
-        // AMBIL DATA PRODUK
         onValue(ref(db, 'products'), (snapshot) => {
             allProducts = snapshot.val() || {};
             renderProduk('Semua');
