@@ -111,36 +111,51 @@
         const namaUser = localStorage.getItem('user_nama');
         if(namaUser) document.getElementById('welcome-name').innerText = "Sugeng Rawuh, " + namaUser + "!";
 
-        // 1. SCRIPT IKLAN (SINKRON DENGAN ADMIN)
+        // ==========================================
+        // SCRIPT IKLAN - VERSI JURUS TERAKHIR
+        // ==========================================
         onValue(ref(db, 'ads'), (snapshot) => {
             const ads = snapshot.val();
             const sliderCont = document.getElementById('slider-container');
             const dotsCont = document.getElementById('slider-dots');
             
+            console.log("Data Iklan dari Firebase:", ads); // Cek di Inspect Element
+
             if (!ads) {
-                sliderCont.innerHTML = `<div class="min-w-full h-full flex items-center justify-center text-gray-300 text-[10px] italic">Belum ada iklan hari ini.</div>`;
+                sliderCont.innerHTML = `<div class="min-w-full h-full flex items-center justify-center text-gray-400 text-[10px] italic">Iklan durung ana, Lur.</div>`;
                 dotsCont.innerHTML = "";
                 return;
             }
 
-            let html = ""; let dots = "";
-            const keys = Object.keys(ads);
+            let html = ""; 
+            let dots = "";
+            
+            // Mengambil semua data di dalam 'ads' tanpa peduli namanya apa
+            const dataIklan = Object.values(ads);
 
-            keys.forEach((key, i) => {
-                const ad = ads[key];
+            dataIklan.forEach((ad, i) => {
                 if (ad && ad.url) {
-                    html += `<div class="min-w-full"><a href="https://wa.me/${ad.link}"><img src="${ad.url}" class="w-full h-full object-cover"></a></div>`;
+                    html += `
+                        <div class="min-w-full w-full h-full flex-shrink-0">
+                            <a href="https://wa.me/${ad.link || '6285647087424'}">
+                                <img src="${ad.url}" class="w-full h-full object-cover" style="display:block;">
+                            </a>
+                        </div>`;
                     dots += `<div class="w-1.5 h-1.5 rounded-full bg-white/50 dot-item"></div>`;
                 }
             });
 
-            sliderCont.innerHTML = html;
-            dotsCont.innerHTML = dots;
+            if (html === "") {
+                sliderCont.innerHTML = `<div class="min-w-full h-full flex items-center justify-center text-gray-400 text-[10px] italic">Format foto salah.</div>`;
+            } else {
+                sliderCont.innerHTML = html;
+                dotsCont.innerHTML = dots;
+            }
 
+            // Animasi Geser
             let current = 0;
             const slides = sliderCont.children;
             const allDots = document.querySelectorAll('.dot-item');
-
             if(allDots.length > 0) allDots[0].classList.replace('bg-white/50', 'bg-white');
             
             if(window.adsTimer) clearInterval(window.adsTimer);
@@ -149,13 +164,16 @@
                     current = (current + 1) % slides.length;
                     sliderCont.style.transform = `translateX(-${current * 100}%)`;
                     allDots.forEach((d, i) => {
-                        d.classList.replace(i === current ? 'bg-white/50' : 'bg-white', i === current ? 'bg-white' : 'bg-white/50');
+                        if(i === current) d.classList.replace('bg-white/50', 'bg-white');
+                        else d.classList.replace('bg-white', 'bg-white/50');
                     });
                 }, 4000);
             }
         });
 
-        // 2. SCRIPT PRODUK
+        // ==========================================
+        // SCRIPT PRODUK (TETAP SAMA)
+        // ==========================================
         onValue(ref(db, 'products'), (snapshot) => {
             allProducts = snapshot.val() || {};
             renderProduk('Semua');
@@ -167,28 +185,12 @@
             list.innerHTML = '';
             const keys = Object.keys(allProducts).reverse();
             let ada = false;
-            
             keys.forEach(key => {
                 const p = allProducts[key];
                 if (kat === 'Semua' || p.kategori === kat) {
                     ada = true;
-                    // Format HP untuk hapus (sinkron +62)
-                    const isAdmin = waUser === "6285647087424";
-                    const isOwner = waUser && (p.wa.toString().includes(waUser.replace('62', '')));
-                    const hps = (isAdmin || isOwner) ? `<button onclick="hapusProduk('${key}')" class="text-red-500 ml-2"><i class="fas fa-trash"></i></button>` : "";
-                    
-                    list.innerHTML += `
-                    <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden flex flex-col">
-                        <img src="${p.foto || 'https://via.placeholder.com/300'}" class="w-full aspect-square object-cover">
-                        <div class="p-3">
-                            <h3 class="text-[11px] font-bold text-gray-700 line-clamp-1">${p.nama}</h3>
-                            <p class="text-green-600 font-black text-sm">Rp ${Number(p.harga).toLocaleString('id-ID')}</p>
-                            <div class="flex mt-3">
-                                <a href="https://wa.me/${p.wa}" class="flex-1 bg-green-600 text-white text-[10px] font-bold py-2 rounded-lg text-center">Beli</a>
-                                ${hps}
-                            </div>
-                        </div>
-                    </div>`;
+                    const hps = (waUser === "6285647087424" || p.wa === waUser) ? `<button onclick="hapusProduk('${key}')" class="text-red-500 ml-2"><i class="fas fa-trash"></i></button>` : "";
+                    list.innerHTML += `<div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden flex flex-col"><img src="${p.foto || 'https://via.placeholder.com/300'}" class="w-full aspect-square object-cover"><div class="p-3"><h3 class="text-[11px] font-bold text-gray-700 line-clamp-1">${p.nama}</h3><p class="text-green-600 font-black text-sm">Rp ${Number(p.harga).toLocaleString('id-ID')}</p><div class="flex mt-3"><a href="https://wa.me/${p.wa}" class="flex-1 bg-green-600 text-white text-[10px] font-bold py-2 rounded-lg text-center">Beli</a>${hps}</div></div></div>`;
                 }
             });
             if(!ada) list.innerHTML = `<p class="col-span-2 text-center text-gray-400 py-10">Belum ada barang, Lur.</p>`;
@@ -200,8 +202,7 @@
             document.getElementById('judul-section').innerText = kat === 'Semua' ? 'Produk Terbaru' : 'Kategori ' + kat;
             renderProduk(kat);
         };
-
-        window.hapusProduk = (id) => { if(confirm("Hapus barang ini, Lur?")) remove(ref(db, 'products/' + id)); };
+        window.hapusProduk = (id) => { if(confirm("Hapus?")) remove(ref(db, 'products/' + id)); };
     </script>
 </body>
 </html>
