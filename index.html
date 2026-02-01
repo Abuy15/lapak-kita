@@ -20,8 +20,10 @@
         .cat-active .cat-icon { background-color: #16a34a !important; color: white !important; }
         .cat-active p { color: #16a34a !important; font-weight: bold; }
         
-        #slider-container div { min-width: 100%; flex-shrink: 0; height: 100%; }
-        #slider-container img { width: 100%; height: 176px; object-fit: cover; display: block; border-radius: 1.5rem; }
+        /* Slider Fix */
+        #slider-container { display: flex; transition: transform 0.5s ease-in-out; height: 100%; width: 100%; }
+        .slide-item { min-width: 100%; width: 100%; height: 100%; flex-shrink: 0; }
+        .slide-item img { width: 100%; height: 176px; object-fit: cover; display: block; border-radius: 1.5rem; }
     </style>
 </head>
 <body class="flex justify-center">
@@ -39,8 +41,8 @@
 
         <div class="px-4 pt-4">
             <div class="relative overflow-hidden rounded-3xl shadow-sm border border-gray-100 h-44 bg-gray-50">
-                <div id="slider-container" class="flex transition-transform duration-500 h-full w-full">
-                    <div class="min-w-full h-full flex items-center justify-center text-gray-400 text-xs italic">Memuat Iklan...</div>
+                <div id="slider-container">
+                    <div class="slide-item flex items-center justify-center text-gray-400 text-xs italic">Memuat Iklan...</div>
                 </div>
                 <div class="absolute bottom-3 left-1/2 -translate-x-1/2 flex gap-1.5" id="slider-dots"></div>
             </div>
@@ -99,30 +101,26 @@
         const namaUser = localStorage.getItem('user_nama');
         if(namaUser) document.getElementById('welcome-name').innerText = "Sugeng Rawuh, " + namaUser + "!";
 
-        // --- 1. LOGIKA IKLAN (VERSI FIX) ---
+        // --- 1. LOGIKA IKLAN (AUTO-FIX LINK) ---
         onValue(ref(db, 'ads'), (snapshot) => {
             const ads = snapshot.val();
             const container = document.getElementById('slider-container');
             const dotsCont = document.getElementById('slider-dots');
             
             if (!ads) {
-                container.innerHTML = `<div class="min-w-full h-full flex items-center justify-center text-gray-400 text-xs italic">Iklan durung ana.</div>`;
+                container.innerHTML = `<div class="slide-item flex items-center justify-center text-gray-400 text-xs italic">Iklan durung ana.</div>`;
                 return;
             }
 
-            let html = "";
-            let dots = "";
-            const keys = Object.keys(ads);
-
-            keys.forEach((key) => {
+            let html = ""; let dots = "";
+            Object.keys(ads).forEach((key) => {
                 const item = ads[key];
                 if (item && item.url) {
-                    html += `
-                        <div class="min-w-full h-full flex-shrink-0">
-                            <a href="https://wa.me/${item.link || '6285647087424'}">
-                                <img src="${item.url}">
-                            </a>
-                        </div>`;
+                    let finalUrl = item.url.trim();
+                    if (finalUrl.includes("ucarecdn.com") && !finalUrl.includes("-/preview/")) {
+                        finalUrl = finalUrl.replace(/\/$/, "") + "/-/preview/1000x500/";
+                    }
+                    html += `<div class="slide-item"><a href="https://wa.me/${item.link || '6285647087424'}"><img src="${finalUrl}" onerror="this.src='https://via.placeholder.com/800x400?text=Gambar+Loading...'"></a></div>`;
                     dots += `<div class="w-1.5 h-1.5 rounded-full bg-white/50 dot-item"></div>`;
                 }
             });
@@ -133,7 +131,7 @@
             let current = 0;
             const slides = container.children;
             const dotElements = document.querySelectorAll('.dot-item');
-            if(dotElements.length > 0) dotElements[0].classList.replace('bg-white/50', 'bg-white');
+            if(dotElements.length > 0) dotElements[0].className = 'w-1.5 h-1.5 rounded-full bg-white dot-item';
             
             if(window.adsTimer) clearInterval(window.adsTimer);
             if(slides.length > 1) {
@@ -166,7 +164,7 @@
                     const hps = (waUser === "6285647087424" || p.wa === waUser) ? `<button onclick="hapusProduk('${key}')" class="text-red-500 ml-2"><i class="fas fa-trash"></i></button>` : "";
                     list.innerHTML += `
                     <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden flex flex-col">
-                        <img src="${p.foto || 'https://via.placeholder.com/300'}" class="w-full aspect-square object-cover">
+                        <img src="${p.foto || 'https://via.placeholder.com/300'}" class="w-full aspect-square object-cover" onerror="this.src='https://via.placeholder.com/300?text=Foto+Bermasalah'">
                         <div class="p-3">
                             <h3 class="text-[11px] font-bold text-gray-700 line-clamp-1">${p.nama}</h3>
                             <p class="text-green-600 font-black text-sm">Rp ${Number(p.harga).toLocaleString('id-ID')}</p>
@@ -178,7 +176,7 @@
                     </div>`;
                 }
             });
-            if(!ada) list.innerHTML = `<p class="col-span-2 text-center text-gray-400 py-10 italic">Barang kosong, Lur.</p>`;
+            if(!ada) list.innerHTML = `<p class="col-span-2 text-center text-gray-400 py-10 italic font-medium">Barang kosong, Lur.</p>`;
         }
 
         window.filterProduk = (kat, el) => {
@@ -187,7 +185,7 @@
             document.getElementById('judul-section').innerText = kat === 'Semua' ? 'Produk Terbaru' : 'Kategori ' + kat;
             renderProduk(kat);
         };
-        window.hapusProduk = (id) => { if(confirm("Hapus?")) remove(ref(db, 'products/' + id)); };
+        window.hapusProduk = (id) => { if(confirm("Arep dihapus, Lur?")) remove(ref(db, 'products/' + id)); };
     </script>
 </body>
 </html>
