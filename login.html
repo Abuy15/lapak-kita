@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Daftar Akun - Lapak Banjarharjo</title>
+    <title>Login / Daftar - Lapak Banjarharjo</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
@@ -13,27 +13,26 @@
             <div class="w-20 h-20 bg-green-100 text-green-600 rounded-3xl flex items-center justify-center mx-auto mb-4 shadow-sm">
                 <i class="fas fa-user-plus text-3xl"></i>
             </div>
-            <h1 class="text-2xl font-black text-gray-800">Daftar Warga</h1>
-            <p class="text-gray-400 text-sm mt-2">Lengkapi data untuk mulai jualan di Lapak Banjarharjo</p>
+            <h1 class="text-2xl font-black text-gray-800 uppercase italic">Masuk Lapak</h1>
+            <p class="text-gray-400 text-sm mt-2 font-medium">Lengkapi data untuk mulai jualan, Lur!</p>
         </div>
 
         <div class="space-y-5">
             <div>
-                <label class="block text-xs font-bold text-gray-500 mb-2 uppercase tracking-widest">Nama Lengkap</label>
-                <input type="text" id="input-nama" required placeholder="Contoh: Kang Asep" class="w-full p-4 bg-gray-50 border border-gray-100 rounded-2xl focus:ring-2 focus:ring-green-500 outline-none transition-all">
+                <label class="block text-[10px] font-bold text-gray-400 mb-2 uppercase tracking-[0.2em]">Nama Lengkap</label>
+                <input type="text" id="input-nama" placeholder="Contoh: Kang Asep" class="w-full p-4 bg-gray-50 border border-gray-100 rounded-2xl focus:ring-2 focus:ring-green-500 outline-none transition-all font-bold">
             </div>
 
             <div>
-                <label class="block text-xs font-bold text-gray-500 mb-2 uppercase tracking-widest">Nomor WhatsApp</label>
+                <label class="block text-[10px] font-bold text-gray-400 mb-2 uppercase tracking-[0.2em]">Nomor WhatsApp</label>
                 <div class="relative">
                     <span class="absolute left-4 top-4 font-bold text-gray-400">+62</span>
-                    <input type="number" id="input-wa" required placeholder="812345678" 
-                           class="w-full p-4 pl-14 bg-gray-50 border border-gray-100 rounded-2xl focus:ring-2 focus:ring-green-500 outline-none transition-all">
+                    <input type="number" id="input-wa" placeholder="812345678" 
+                           class="w-full p-4 pl-14 bg-gray-50 border border-gray-100 rounded-2xl focus:ring-2 focus:ring-green-500 outline-none transition-all font-bold">
                 </div>
-                <p class="text-[10px] text-gray-400 mt-2">*Ketik mulai angka 8. Otomatis tersimpan sebagai format internasional.</p>
             </div>
 
-            <button id="btn-daftar" class="w-full bg-green-600 text-white font-bold py-4 rounded-2xl shadow-lg shadow-green-200 active:scale-95 transition-all mt-4">
+            <button id="btn-daftar" class="w-full bg-green-600 text-white font-black py-4 rounded-2xl shadow-lg shadow-green-100 active:scale-95 transition-all mt-4 uppercase italic">
                 Simpan & Mulai
             </button>
         </div>
@@ -52,6 +51,11 @@
         const app = initializeApp(firebaseConfig);
         const db = getDatabase(app);
 
+        // CEK: Kalau di HP sudah ada data, jangan boleh masuk ke halaman ini lagi
+        if (localStorage.getItem('user_wa')) {
+            window.location.href = "index.html";
+        }
+
         const btnDaftar = document.getElementById('btn-daftar');
 
         btnDaftar.addEventListener('click', function() {
@@ -59,29 +63,18 @@
             let rawWa = document.getElementById('input-wa').value.trim();
 
             if (!nama || !rawWa) {
-                alert("Isi kabeh disit ya, Lur! (Nama & WA wajib diisi)");
+                alert("Isi kabeh disit ya, Lur!");
                 return;
             }
 
-            // --- PROSES PEMBERSIHAN NOMOR WA ---
-            // 1. Hapus angka 0, tanda +, atau spasi di depan jika ada
+            // Bersihkan WA
             let cleanWa = rawWa.replace(/^0+|^\+/, ''); 
-            
-            // 2. Jika input belum diawali 62, tambahkan 62 di depannya
-            let formattedWa = cleanWa;
-            if (!cleanWa.startsWith('62')) {
-                formattedWa = '62' + cleanWa;
-            }
+            let formattedWa = cleanWa.startsWith('62') ? cleanWa : '62' + cleanWa;
 
-            // Efek Loading
             btnDaftar.innerHTML = '<i class="fas fa-spinner animate-spin"></i> Ngolah data...';
             btnDaftar.disabled = true;
 
-            // 1. Simpan di LocalStorage (Supaya sistem tahu siapa yang login)
-            localStorage.setItem('user_nama', nama);
-            localStorage.setItem('user_wa', formattedWa);
-
-            // 2. Simpan ke Firebase Database
+            // SIMPAN KE FIREBASE
             const userRef = ref(db, 'users/' + formattedWa);
             set(userRef, {
                 nama: nama,
@@ -89,11 +82,23 @@
                 joinedAt: new Date().toISOString()
             })
             .then(() => {
+               // Simpan dengan nama yang dikenali halaman jual.html
+               localStorage.setItem('user_nama_manual', nama);
+               localStorage.setItem('user_wa_manual', formattedWa);
+    
+               // Simpan juga dengan nama asli bawaan login.html (biar nggak error)
+                localStorage.setItem('user_nama', nama);
+               localStorage.setItem('user_wa', formattedWa);
+
                 alert("Matur nuwun, " + nama + "! Akun sampeyan wis aktif.");
-                window.location.href = "index.html"; 
-            })
+    
+                setTimeout(() => {
+                    window.location.href = "index.html"; 
+                }, 200);
+           })
+
             .catch((error) => {
-                alert("Waduh gagal simpan: " + error.message);
+                alert("Gagal: " + error.message);
                 btnDaftar.innerHTML = 'Simpan & Mulai';
                 btnDaftar.disabled = false;
             });
