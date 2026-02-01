@@ -107,26 +107,51 @@
         const waUser = localStorage.getItem('user_wa');
         const namaUser = localStorage.getItem('user_nama');
         if(namaUser) document.getElementById('welcome-name').innerText = "Sugeng Rawuh, " + namaUser + "!";
-
+            // --- SCRIPT IKLAN SLIDER ---
         onValue(ref(db, 'ads'), (snapshot) => {
             const ads = snapshot.val();
             const sliderCont = document.getElementById('slider-container');
             const dotsCont = document.getElementById('slider-dots');
-            if (!ads) return;
-            const keys = Object.keys(ads).sort();
-            let html = ""; let dots = "";
+            
+            if (!ads) {
+                sliderCont.innerHTML = `<div class="min-w-full h-full flex items-center justify-center text-gray-300 text-[10px] italic">Belum ada iklan hari ini.</div>`;
+                dotsCont.innerHTML = "";
+                return;
+            }
+
+            const keys = Object.keys(ads);
+            let html = ""; 
+            let dots = "";
+
             keys.forEach((key, i) => {
-                html += `<div class="min-w-full w-full h-full flex-shrink-0"><a href="https://wa.me/${ads[key].link}"><img src="${ads[key].url}" class="w-full h-full object-cover"></a></div>`;
-                dots += `<div class="w-1.5 h-1.5 rounded-full bg-white/50 dot-item"></div>`;
+                const ad = ads[key];
+                // Pastikan ada URL gambar, kalau tidak ada kita lewati
+                if (ad && ad.url) {
+                    html += `
+                        <div class="min-w-full w-full h-full flex-shrink-0">
+                            <a href="https://wa.me/${ad.link || '6285647087424'}">
+                                <img src="${ad.url}" class="w-full h-full object-cover" onerror="this.src='https://placehold.co/400x200?text=Iklan+Lapak'">
+                            </a>
+                        </div>`;
+                    dots += `<div class="w-1.5 h-1.5 rounded-full bg-white/50 dot-item"></div>`;
+                }
             });
-            sliderCont.innerHTML = html; dotsCont.innerHTML = dots;
+
+            sliderCont.innerHTML = html; 
+            dotsCont.innerHTML = dots;
+
+            // Logika Geser Otomatis
             let current = 0;
             const allDots = document.querySelectorAll('.dot-item');
+            const totalSlides = document.querySelectorAll('#slider-container > div').length;
+
             if(allDots.length > 0) allDots[0].classList.replace('bg-white/50', 'bg-white');
+            
             if(window.adsTimer) clearInterval(window.adsTimer);
-            if(keys.length > 1) {
+            
+            if(totalSlides > 1) {
                 window.adsTimer = setInterval(() => {
-                    current = (current + 1) % keys.length;
+                    current = (current + 1) % totalSlides;
                     sliderCont.style.transform = `translateX(-${current * 100}%)`;
                     allDots.forEach((d, i) => {
                         if(i === current) d.classList.replace('bg-white/50', 'bg-white');
@@ -135,6 +160,8 @@
                 }, 4000);
             }
         });
+
+
 
         onValue(ref(db, 'products'), (snapshot) => {
             allProducts = snapshot.val() || {};
