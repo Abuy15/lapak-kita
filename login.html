@@ -14,10 +14,21 @@
                 <i class="fas fa-user-plus text-3xl"></i>
             </div>
             <h1 class="text-2xl font-black text-gray-800 uppercase italic">Masuk Lapak</h1>
-            <p class="text-gray-400 text-sm mt-2 font-medium">Lengkapi data untuk mulai jualan, Lur!</p>
+            <p class="text-gray-400 text-sm mt-2 font-medium">Pilih cara masuk yang paling gampang, Lur!</p>
         </div>
 
         <div class="space-y-5">
+            <button id="btn-google" class="w-full flex items-center justify-center gap-3 bg-white border-2 border-gray-100 py-4 rounded-2xl font-bold text-gray-700 shadow-sm hover:bg-gray-50 active:scale-95 transition-all">
+                <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" width="20">
+                Masuk pakai Google
+            </button>
+
+            <div class="relative flex py-2 items-center">
+                <div class="flex-grow border-t border-gray-200"></div>
+                <span class="flex-shrink mx-4 text-gray-300 text-[10px] font-black uppercase tracking-widest">Atau Pakai WA</span>
+                <div class="flex-grow border-t border-gray-200"></div>
+            </div>
+
             <div>
                 <label class="block text-[10px] font-bold text-gray-400 mb-2 uppercase tracking-[0.2em]">Nama Lengkap</label>
                 <input type="text" id="input-nama" placeholder="Contoh: Kang Asep" class="w-full p-4 bg-gray-50 border border-gray-100 rounded-2xl focus:ring-2 focus:ring-green-500 outline-none transition-all font-bold">
@@ -41,6 +52,7 @@
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
         import { getDatabase, ref, set } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
+        import { getAuth, signInWithPopup, GoogleAuthProvider } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyAowYbcfC9RsMCxKf2ZmwvTiLvooKaWI5U",
@@ -50,14 +62,27 @@
 
         const app = initializeApp(firebaseConfig);
         const db = getDatabase(app);
+        const auth = getAuth(app);
+        const provider = new GoogleAuthProvider();
 
-        // CEK: Kalau di HP sudah ada data, jangan boleh masuk ke halaman ini lagi
-        if (localStorage.getItem('user_wa')) {
-            window.location.href = "index.html";
+        // 1. CEK: Kalau di HP sudah ada data, langsung lempar ke profil
+        if (localStorage.getItem('user_wa') || localStorage.getItem('user_nama')) {
+            window.location.href = "profil.html";
         }
 
-        const btnDaftar = document.getElementById('btn-daftar');
+        // 2. FUNGSI LOGIN GOOGLE
+        document.getElementById('btn-google').addEventListener('click', () => {
+            signInWithPopup(auth, provider).then((result) => {
+                const user = result.user;
+                localStorage.setItem('user_nama', user.displayName);
+                localStorage.setItem('user_nama_manual', user.displayName);
+                localStorage.setItem('user_wa', "google-user"); // Penanda login via Google
+                window.location.href = "profil.html";
+            }).catch((err) => alert("Gagal Google: " + err.message));
+        });
 
+        // 3. FUNGSI LOGIN MANUAL (WA)
+        const btnDaftar = document.getElementById('btn-daftar');
         btnDaftar.addEventListener('click', function() {
             const nama = document.getElementById('input-nama').value.trim();
             let rawWa = document.getElementById('input-wa').value.trim();
@@ -67,14 +92,12 @@
                 return;
             }
 
-            // Bersihkan WA
             let cleanWa = rawWa.replace(/^0+|^\+/, ''); 
             let formattedWa = cleanWa.startsWith('62') ? cleanWa : '62' + cleanWa;
 
             btnDaftar.innerHTML = '<i class="fas fa-spinner animate-spin"></i> Ngolah data...';
             btnDaftar.disabled = true;
 
-            // SIMPAN KE FIREBASE
             const userRef = ref(db, 'users/' + formattedWa);
             set(userRef, {
                 nama: nama,
@@ -82,21 +105,14 @@
                 joinedAt: new Date().toISOString()
             })
             .then(() => {
-               // Simpan dengan nama yang dikenali halaman jual.html
-               localStorage.setItem('user_nama_manual', nama);
-               localStorage.setItem('user_wa_manual', formattedWa);
-    
-               // Simpan juga dengan nama asli bawaan login.html (biar nggak error)
                 localStorage.setItem('user_nama', nama);
-               localStorage.setItem('user_wa', formattedWa);
+                localStorage.setItem('user_wa', formattedWa);
+                localStorage.setItem('user_nama_manual', nama);
+                localStorage.setItem('user_wa_manual', formattedWa);
 
                 alert("Matur nuwun, " + nama + "! Akun sampeyan wis aktif.");
-    
-                setTimeout(() => {
-                    window.location.href = "index.html"; 
-                }, 200);
-           })
-
+                window.location.href = "profil.html"; 
+            })
             .catch((error) => {
                 alert("Gagal: " + error.message);
                 btnDaftar.innerHTML = 'Simpan & Mulai';
