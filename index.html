@@ -9,8 +9,6 @@
     <link rel="apple-touch-icon" href="logo.png">
     <meta name="theme-color" content="#16a34a">
 
-    <link rel="manifest" href="data:application/json;base64,ewogICJzaG9ydF9uYW1lIjogIkxhcGFrS2l0YSIsCiAgIm5hbWUiOiAiTGFwYWsgQmFuamFyaGFyam8iLAogICJpY29ucyI6IFsKICAgIHsKICAgICAgInNyYyI6ICJsb2dvLnBuZz92PTIiLAogICAgICAic2l6ZXMiOiAiMTkyeDE5MiIsCiAgICAgICJ0eXBlIjogImltYWdlL3BuZyIsCiAgICAgICJwdXJwb3NlIjogImFueSIKICAgIH0sCiAgICB7CiAgICAgICJzcmMiOiAibG9nby5wbmc/dj0yIiwKICAgICAgInNpemVzIjogIjUxMng1MTIiLAogICAgICAidHlwZSI6ICJpbWFnZS9wbmciLAogICAgICAicHVycG9zZSI6ICJtYXNrYWJsZSIKICAgIH0KICBdLAogICJzdGFydF91cmwiOiAiaW5kZXguaHRtbCIsCiAgImRpc3BsYXkiOiAic3RhbmRhbG9uZSIsCiAgImJhY2tncm91bmRfY29sb3IiOiAiI2ZmZmZmZiIsCiAgInRoZW1lX2NvbG9yIjogIiMxNmEzNGEiCn0=">
-
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
@@ -21,8 +19,10 @@
         .hide-scroll::-webkit-scrollbar { display: none; }
         .cat-active .cat-icon { background-color: #16a34a !important; color: white !important; }
         .cat-active p { color: #16a34a !important; font-weight: bold; }
-        #slider-container div { min-width: 100%; flex-shrink: 0; }
-        #slider-container img { width: 100%; height: 100%; object-fit: cover; }
+        
+        /* Fix Slider agar gambar pas */
+        #slider-container div { min-width: 100%; flex-shrink: 0; height: 100%; }
+        #slider-container img { width: 100%; height: 100%; object-fit: cover; display: block; }
     </style>
 </head>
 <body class="flex justify-center">
@@ -104,12 +104,13 @@
 
         const app = initializeApp(firebaseConfig);
         const db = getDatabase(app);
+        
         let allProducts = {};
         const waUser = localStorage.getItem('user_wa');
         const namaUser = localStorage.getItem('user_nama');
         if(namaUser) document.getElementById('welcome-name').innerText = "Sugeng Rawuh, " + namaUser + "!";
 
-        // 1. SCRIPT IKLAN (VERSI BEBAS)
+        // 1. SCRIPT IKLAN (VERSI JALUR KHUSUS SLIDE 1 & 2)
         onValue(ref(db, 'ads'), (snapshot) => {
             const ads = snapshot.val();
             const sliderCont = document.getElementById('slider-container');
@@ -121,17 +122,23 @@
             }
 
             let html = ""; let dots = "";
-            const dataIklan = Object.values(ads);
-
-            dataIklan.forEach((ad, i) => {
-                html += `
-                    <div class="min-w-full h-full flex-shrink-0">
-                        <a href="https://wa.me/${ad.link || '6285647087424'}">
-                            <img src="${ad.url}" class="w-full h-full object-cover">
-                        </a>
-                    </div>`;
-                dots += `<div class="w-1.5 h-1.5 rounded-full bg-white/50 dot-item"></div>`;
+            // Menjemput slide1 dan slide2 secara manual agar sesuai file Admin
+            ['slide1', 'slide2'].forEach((s, i) => {
+                if (ads[s] && ads[s].url) {
+                    html += `
+                        <div class="min-w-full">
+                            <a href="https://wa.me/${ads[s].link || '6285647087424'}">
+                                <img src="${ads[s].url}" class="w-full h-full object-cover">
+                            </a>
+                        </div>`;
+                    dots += `<div class="w-1.5 h-1.5 rounded-full bg-white/50 dot-item"></div>`;
+                }
             });
+
+            if(html === "") {
+                sliderCont.innerHTML = `<div class="min-w-full h-full flex items-center justify-center text-gray-400 text-xs italic">Iklan durung ana.</div>`;
+                return;
+            }
 
             sliderCont.innerHTML = html;
             dotsCont.innerHTML = dots;
@@ -147,12 +154,11 @@
                     current = (current + 1) % slides.length;
                     sliderCont.style.transform = `translateX(-${current * 100}%)`;
                     allDots.forEach((d, i) => {
-                        if(i === current) d.classList.replace('bg-white/50', 'bg-white');
-                        else d.classList.replace('bg-white', 'bg-white/50');
+                        d.classList.replace(i === current ? 'bg-white/50' : 'bg-white', i === current ? 'bg-white' : 'bg-white/50');
                     });
                 }, 4000);
             }
-        }); // <-- TANDA INI TADI HILANG
+        });
 
         // 2. SCRIPT PRODUK
         onValue(ref(db, 'products'), (snapshot) => {
@@ -171,10 +177,21 @@
                 if (kat === 'Semua' || p.kategori === kat) {
                     ada = true;
                     const hps = (waUser === "6285647087424" || p.wa === waUser) ? `<button onclick="hapusProduk('${key}')" class="text-red-500 ml-2"><i class="fas fa-trash"></i></button>` : "";
-                    list.innerHTML += `<div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden flex flex-col"><img src="${p.foto || 'https://via.placeholder.com/300'}" class="w-full aspect-square object-cover"><div class="p-3"><h3 class="text-[11px] font-bold text-gray-700 line-clamp-1">${p.nama}</h3><p class="text-green-600 font-black text-sm">Rp ${Number(p.harga).toLocaleString('id-ID')}</p><div class="flex mt-3"><a href="https://wa.me/${p.wa}" class="flex-1 bg-green-600 text-white text-[10px] font-bold py-2 rounded-lg text-center">Beli</a>${hps}</div></div></div>`;
+                    list.innerHTML += `
+                    <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden flex flex-col">
+                        <img src="${p.foto || 'https://via.placeholder.com/300'}" class="w-full aspect-square object-cover">
+                        <div class="p-3">
+                            <h3 class="text-[11px] font-bold text-gray-700 line-clamp-1">${p.nama}</h3>
+                            <p class="text-green-600 font-black text-sm">Rp ${Number(p.harga).toLocaleString('id-ID')}</p>
+                            <div class="flex mt-3">
+                                <a href="https://wa.me/${p.wa}" class="flex-1 bg-green-600 text-white text-[10px] font-bold py-2 rounded-lg text-center">Beli</a>
+                                ${hps}
+                            </div>
+                        </div>
+                    </div>`;
                 }
             });
-            if(!ada) list.innerHTML = `<p class="col-span-2 text-center text-gray-400 py-10">Belum ada barang, Lur.</p>`;
+            if(!ada) list.innerHTML = `<p class="col-span-2 text-center text-gray-400 py-10 italic">Barang kosong, Lur.</p>`;
         }
 
         window.filterProduk = (kat, el) => {
@@ -183,7 +200,6 @@
             document.getElementById('judul-section').innerText = kat === 'Semua' ? 'Produk Terbaru' : 'Kategori ' + kat;
             renderProduk(kat);
         };
-        
         window.hapusProduk = (id) => { if(confirm("Hapus?")) remove(ref(db, 'products/' + id)); };
     </script>
 </body>
