@@ -109,27 +109,36 @@
         const namaUser = localStorage.getItem('user_nama');
         if(namaUser) document.getElementById('welcome-name').innerText = "Sugeng Rawuh, " + namaUser + "!";
 
-        // 1. SCRIPT IKLAN (VERSI FIX)
+        // 1. SCRIPT IKLAN (VERSI DETEKSI ERROR)
         onValue(ref(db, 'ads'), (snapshot) => {
             const ads = snapshot.val();
             const sliderCont = document.getElementById('slider-container');
             const dotsCont = document.getElementById('slider-dots');
             
-            if (!ads) {
+            console.log("Data diterima dari Firebase:", ads); // Cek di Inspect -> Console
+
+            if (!ads || Object.keys(ads).length === 0) {
                 sliderCont.innerHTML = `<div class="min-w-full h-full flex items-center justify-center text-gray-400 text-xs italic">Iklan durung ana.</div>`;
+                dotsCont.innerHTML = "";
                 return;
             }
 
-            let html = ""; let dots = "";
-            const keys = Object.keys(ads);
-
-            keys.forEach((key, i) => {
+            let html = ""; 
+            let dots = "";
+            
+            // Kita loop semua data di folder 'ads'
+            Object.keys(ads).forEach((key) => {
                 const item = ads[key];
                 if (item && item.url) {
+                    // Pastikan URL gambar bersih dari spasi
+                    const cleanUrl = item.url.trim();
+                    
                     html += `
-                        <div class="min-w-full h-full flex-shrink-0">
-                            <a href="https://wa.me/${item.link || '6285647087424'}">
-                                <img src="${item.url}" class="w-full h-full object-cover">
+                        <div class="min-w-full h-full flex-shrink-0" style="width:100%">
+                            <a href="https://wa.me/${item.link || '6285647087424'}" target="_blank">
+                                <img src="${cleanUrl}" 
+                                     style="width:100%; height:176px; object-fit:cover; display:block; border-radius:24px;"
+                                     onerror="this.src='https://via.placeholder.com/400x200?text=Gambar+Gagal+Loading'">
                             </a>
                         </div>`;
                     dots += `<div class="w-1.5 h-1.5 rounded-full bg-white/50 dot-item"></div>`;
@@ -139,15 +148,17 @@
             sliderCont.innerHTML = html;
             dotsCont.innerHTML = dots;
 
+            // Logika geser
             let current = 0;
-            const slides = sliderCont.children;
+            const allSlides = sliderCont.children;
             const allDots = document.querySelectorAll('.dot-item');
+            
             if(allDots.length > 0) allDots[0].classList.replace('bg-white/50', 'bg-white');
             
             if(window.adsTimer) clearInterval(window.adsTimer);
-            if(slides.length > 1) {
+            if(allSlides.length > 1) {
                 window.adsTimer = setInterval(() => {
-                    current = (current + 1) % slides.length;
+                    current = (current + 1) % allSlides.length;
                     sliderCont.style.transform = `translateX(-${current * 100}%)`;
                     allDots.forEach((d, i) => {
                         if(i === current) d.classList.replace('bg-white/50', 'bg-white');
