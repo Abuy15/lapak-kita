@@ -110,7 +110,7 @@
         const namaUser = localStorage.getItem('user_nama');
         if(namaUser) document.getElementById('welcome-name').innerText = "Sugeng Rawuh, " + namaUser + "!";
 
-        // 1. SCRIPT IKLAN (VERSI JALUR KHUSUS SLIDE 1 & 2)
+        // 1. SCRIPT IKLAN (VERSI ANTI GAGAL)
         onValue(ref(db, 'ads'), (snapshot) => {
             const ads = snapshot.val();
             const sliderCont = document.getElementById('slider-container');
@@ -121,19 +121,43 @@
                 return;
             }
 
-            let html = ""; let dots = "";
-            // Menjemput slide1 dan slide2 secara manual agar sesuai file Admin
-            ['slide1', 'slide2'].forEach((s, i) => {
-                if (ads[s] && ads[s].url) {
+            let html = "";
+            let dots = "";
+            
+            // Kita ambil semua data di dalam 'ads', tidak peduli namanya slide1 atau apapun
+            Object.keys(ads).forEach((key) => {
+                const item = ads[key];
+                if (item && item.url) {
                     html += `
-                        <div class="min-w-full">
-                            <a href="https://wa.me/${ads[s].link || '6285647087424'}">
-                                <img src="${ads[s].url}" class="w-full h-full object-cover">
+                        <div class="min-w-full h-full flex-shrink-0" style="width:100%">
+                            <a href="https://wa.me/${item.link || '6285647087424'}">
+                                <img src="${item.url}" style="width:100%; height:176px; object-fit:cover; display:block;">
                             </a>
                         </div>`;
                     dots += `<div class="w-1.5 h-1.5 rounded-full bg-white/50 dot-item"></div>`;
                 }
             });
+
+            sliderCont.innerHTML = html;
+            dotsCont.innerHTML = dots;
+
+            // Jalankan Slider
+            let current = 0;
+            const slides = sliderCont.children;
+            const allDots = document.querySelectorAll('.dot-item');
+            if(allDots.length > 0) allDots[0].classList.replace('bg-white/50', 'bg-white');
+            
+            if(window.adsTimer) clearInterval(window.adsTimer);
+            if(slides.length > 1) {
+                window.adsTimer = setInterval(() => {
+                    current = (current + 1) % slides.length;
+                    sliderCont.style.transform = `translateX(-${current * 100}%)`;
+                    allDots.forEach((d, i) => {
+                        d.className = i === current ? 'w-1.5 h-1.5 rounded-full bg-white dot-item' : 'w-1.5 h-1.5 rounded-full bg-white/50 dot-item';
+                    });
+                }, 4000);
+            }
+        });
 
             if(html === "") {
                 sliderCont.innerHTML = `<div class="min-w-full h-full flex items-center justify-center text-gray-400 text-xs italic">Iklan durung ana.</div>`;
