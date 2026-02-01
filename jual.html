@@ -6,6 +6,10 @@
     <title>Jual Barang - Lapak Banjarharjo</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-database-compat.js"></script>
+    
     <style>
         body { font-family: 'Inter', sans-serif; background-color: #f3f4f6; }
         .content-wrapper { padding-bottom: 100px; }
@@ -19,7 +23,47 @@
             <h1 class="text-xl font-bold">Mulai Jualan</h1>
         </header>
 
-        <form id="formJual" class="p-6 space-y-5">
+        <div id="login-section" class="p-6 text-center space-y-6 hidden">
+    <div class="bg-green-50 p-6 rounded-3xl">
+        <i class="fas fa-store text-5xl text-green-600 mb-4"></i>
+        <h2 class="text-xl font-bold text-gray-800">Mau Jualan, Lur?</h2>
+        <p class="text-gray-600 text-sm">Pilih cara masuk yang paling gampang menurut sampeyan:</p>
+    </div>
+
+    <button onclick="loginGoogle()" class="w-full flex items-center justify-center gap-3 bg-white border-2 border-gray-200 py-4 rounded-2xl font-bold text-gray-700 shadow-sm hover:bg-gray-50 transition-all">
+        <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" width="20">
+        Masuk pakai Google
+    </button>
+
+    <div class="relative flex py-2 items-center">
+        <div class="flex-grow border-t border-gray-300"></div>
+        <span class="flex-shrink mx-4 text-gray-400 text-xs uppercase font-bold">Atau</span>
+        <div class="flex-grow border-t border-gray-300"></div>
+    </div>
+
+    <div class="bg-white border-2 border-green-500 p-5 rounded-2xl shadow-sm space-y-3">
+        <p class="text-sm font-bold text-green-700 italic">"Cara gampang nggo wong tua"</p>
+        <input type="number" id="inputLoginWa" placeholder="Masukkan No. WA (Contoh: 085xxx)" class="w-full p-3 border rounded-xl outline-none focus:border-green-500 text-center font-bold">
+        <button onclick="loginManualWA()" class="w-full bg-green-600 text-white font-bold py-3 rounded-xl hover:bg-green-700">
+            Masuk Pakai Nomor WA
+        </button>
+    </div>
+            </div>
+            <button onclick="loginGoogle()" class="w-full flex items-center justify-center gap-3 bg-white border-2 border-gray-200 py-3 rounded-2xl font-bold text-gray-700 shadow-sm hover:bg-gray-50 transition-all">
+                <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" width="20">
+                Login dengan Google
+            </button>
+        </div>
+
+        <form id="formJual" class="p-6 space-y-5 hidden">
+            <div class="flex items-center justify-between bg-gray-50 p-3 rounded-xl border border-gray-100">
+                <div class="flex items-center gap-2">
+                    <img id="user-photo" class="w-8 h-8 rounded-full border border-green-500">
+                    <span id="user-name" class="text-sm font-bold text-gray-700"></span>
+                </div>
+                <button type="button" onclick="logout()" class="text-xs text-red-500 font-bold uppercase tracking-wider">Logout</button>
+            </div>
+
             <div class="space-y-2">
                 <label class="block text-sm font-black text-gray-700">Foto Produk (Wajib)</label>
                 <div onclick="document.getElementById('inputFoto').click()" class="w-full h-48 border-2 border-dashed border-green-400 rounded-2xl bg-green-50 flex flex-col items-center justify-center cursor-pointer overflow-hidden relative">
@@ -31,7 +75,7 @@
                         <p class="text-xs text-green-700 font-bold">Tambah Foto Barang</p>
                     </div>
                 </div>
-                <input type="file" id="inputFoto" accept="image/*" class="hidden" required>
+                <input type="file" id="inputFoto" accept="image/*" class="hidden">
             </div>
 
             <div>
@@ -48,17 +92,13 @@
                 <div>
                     <label class="block text-sm font-bold text-gray-700 mb-1">Kategori</label>
                     <select id="kategori" class="w-full p-3 rounded-xl border border-gray-300 bg-white">
-                        <option value="Kuliner">Kuliner</option>
-                        <option value="Elektronik">Elektronik</option>
-                        <option value="Fashion">Fashion</option>
-                        <option value="Tani">Tani</option>
-                        <option value="Jasa">Jasa</option>
-                        <option value="Lainnya">Lainnya</option>
+                        <option>Kuliner</option><option>Elektronik</option><option>Fashion</option>
+                        <option>Otomotif</option><option>Tani</option><option>Jasa</option><option>Lainnya</option>
                     </select>
                 </div>
                 <div>
                     <label class="block text-sm font-bold text-gray-700 mb-1">Pilih Desa</label>
-                    <select id="desa" required class="w-full p-3 rounded-xl border border-gray-300 bg-white outline-none focus:border-green-500">
+                    <select id="desa" required class="w-full p-3 rounded-xl border border-gray-300 bg-white">
                         <option value="">-- Pilih --</option>
                         <option>Banjarharjo</option><option>Bandungsari</option><option>Blandongan</option>
                         <option>Ciawi</option><option>Cihaur</option><option>Cigadung</option>
@@ -72,36 +112,58 @@
                 </div>
             </div>
 
+            <div>
+                <label class="block text-sm font-bold text-gray-700 mb-1">Nomor WhatsApp</label>
+                <input type="number" id="wa" required placeholder="6285xxxx (Awali 62)" class="w-full p-3 rounded-xl border border-gray-300 outline-none focus:border-green-500">
+            </div>
+
             <button type="submit" id="btnSubmit" class="w-full bg-green-600 text-white font-black py-4 rounded-2xl shadow-lg active:scale-95 transition-all text-lg mt-4">
                 TAYANGKAN IKLAN
             </button>
         </form>
     </div>
 
-    <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-        import { getDatabase, ref, push } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
-
+    <script>
+        // KONFIGURASI FIREBASE
         const firebaseConfig = {
             apiKey: "AIzaSyAowYbcfC9RsMCxKf2ZmwvTiLvooKaWI5U",
             databaseURL: "https://lapak-banjarharjo-default-rtdb.asia-southeast1.firebasedatabase.app",
-            projectId: "lapak-banjarharjo"
+            projectId: "lapak-banjarharjo",
+            authDomain: "lapak-banjarharjo.firebaseapp.com"
         };
 
-        const app = initializeApp(firebaseConfig);
-        const db = getDatabase(app);
+        firebase.initializeApp(firebaseConfig);
+        const auth = firebase.auth();
+        const db = firebase.database();
 
-        const myNama = localStorage.getItem('user_nama');
-        const myWa = localStorage.getItem('user_wa');
-
-        if (!myNama || !myWa) {
-            alert("Login dhisit, Lur!");
-            window.location.href = "daftar.html";
+        // 1. FUNGSI LOGIN & LOGOUT
+        function loginGoogle() {
+            const provider = new firebase.auth.GoogleAuthProvider();
+            auth.signInWithPopup(provider).catch(err => alert("Gagal Login: " + err.message));
         }
 
-        let base64Image = "";
+        function logout() {
+            if(confirm("Yakin mau keluar, Lur?")) auth.signOut();
+        }
 
-        // Fungsi Ambil Foto & Kompres Langsung ke Base64
+        // 2. PANTAU STATUS LOGIN
+        auth.onAuthStateChanged(user => {
+            const loginSection = document.getElementById('login-section');
+            const formJual = document.getElementById('formJual');
+            
+            if (user) {
+                loginSection.classList.add('hidden');
+                formJual.classList.remove('hidden');
+                document.getElementById('user-name').innerText = user.displayName;
+                document.getElementById('user-photo').src = user.photoURL;
+            } else {
+                loginSection.classList.remove('hidden');
+                formJual.classList.add('hidden');
+            }
+        });
+
+        // 3. LOGIKA UNTUK GAMBAR (BASE64)
+        let base64Image = "";
         document.getElementById('inputFoto').addEventListener('change', function(e) {
             const file = e.target.files[0];
             if (file) {
@@ -111,25 +173,19 @@
                     img.src = event.target.result;
                     img.onload = function() {
                         const canvas = document.createElement('canvas');
-                        // Kita kecilkan ukurannya biar database gak penuh (Max 500px)
                         const MAX_SIZE = 500;
                         let width = img.width;
                         let height = img.height;
-
                         if (width > height) {
                             if (width > MAX_SIZE) { height *= MAX_SIZE / width; width = MAX_SIZE; }
                         } else {
                             if (height > MAX_SIZE) { width *= MAX_SIZE / height; height = MAX_SIZE; }
                         }
-                        
                         canvas.width = width;
                         canvas.height = height;
                         const ctx = canvas.getContext('2d');
                         ctx.drawImage(img, 0, 0, width, height);
-                        
-                        // Ubah ke teks (Base64) dengan kualitas 0.7 (biar ringan)
                         base64Image = canvas.toDataURL('image/jpeg', 0.7);
-                        
                         document.getElementById('previewImage').src = base64Image;
                         document.getElementById('previewImage').classList.remove('hidden');
                         document.getElementById('placeholderFoto').classList.add('hidden');
@@ -139,7 +195,8 @@
             }
         });
 
-        document.getElementById('formJual').addEventListener('submit', async function(e) {
+        // 4. SIMPAN IKLAN KE DATABASE
+        document.getElementById('formJual').addEventListener('submit', function(e) {
             e.preventDefault();
             if(!base64Image) return alert("Fotoné endi, Lur?");
 
@@ -147,25 +204,24 @@
             btn.disabled = true;
             btn.innerHTML = `<i class="fas fa-spinner fa-spin"></i> LAGI NGIRIM...`;
 
-            try {
-                await push(ref(db, 'products'), {
-                    nama: document.getElementById('nama').value,
-                    harga: document.getElementById('harga').value,
-                    kategori: document.getElementById('kategori').value,
-                    desa: document.getElementById('desa').value,
-                    penjual: myNama,
-                    wa: myWa,
-                    foto: base64Image, // Foto disimpan dalam bentuk teks panjang
-                    timestamp: Date.now()
-                });
-
+            db.ref('products').push({
+                nama: document.getElementById('nama').value,
+                harga: document.getElementById('harga').value,
+                kategori: document.getElementById('kategori').value,
+                desa: document.getElementById('desa').value,
+                wa: document.getElementById('wa').value,
+                foto: base64Image,
+                penjual: auth.currentUser.displayName,
+                email: auth.currentUser.email,
+                timestamp: Date.now()
+            }).then(() => {
                 alert("Mantap! Dagangan sampeyan wis tayang.");
                 window.location.href = "index.html";
-            } catch (error) {
-                alert("Waduh gagal: " + error.message);
+            }).catch(err => {
+                alert("Gagal: " + err.message);
                 btn.disabled = false;
                 btn.innerText = "TAYANGKAN IKLAN";
-            }
+            });
         });
     </script>
 </body>
