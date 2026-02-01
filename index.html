@@ -22,6 +22,7 @@
         .cat-active .cat-icon { background-color: #16a34a !important; color: white !important; }
         .cat-active p { color: #16a34a !important; font-weight: bold; }
         #slider-container div { min-width: 100%; flex-shrink: 0; }
+        #slider-container img { width: 100%; height: 100%; object-fit: cover; }
     </style>
 </head>
 <body class="flex justify-center">
@@ -108,7 +109,7 @@
         const namaUser = localStorage.getItem('user_nama');
         if(namaUser) document.getElementById('welcome-name').innerText = "Sugeng Rawuh, " + namaUser + "!";
 
-         // 1. SCRIPT IKLAN (VERSI BEBAS - KAYAK KEMARIN)
+        // 1. SCRIPT IKLAN (VERSI BEBAS)
         onValue(ref(db, 'ads'), (snapshot) => {
             const ads = snapshot.val();
             const sliderCont = document.getElementById('slider-container');
@@ -123,7 +124,6 @@
             const dataIklan = Object.values(ads);
 
             dataIklan.forEach((ad, i) => {
-                // Kita pakai cara paling dasar biar nggak rewel
                 html += `
                     <div class="min-w-full h-full flex-shrink-0">
                         <a href="https://wa.me/${ad.link || '6285647087424'}">
@@ -136,7 +136,6 @@
             sliderCont.innerHTML = html;
             dotsCont.innerHTML = dots;
 
-            // Logika geser tetap ada
             let current = 0;
             const slides = sliderCont.children;
             const allDots = document.querySelectorAll('.dot-item');
@@ -153,8 +152,9 @@
                     });
                 }, 4000);
             }
+        }); // <-- TANDA INI TADI HILANG
 
-
+        // 2. SCRIPT PRODUK
         onValue(ref(db, 'products'), (snapshot) => {
             allProducts = snapshot.val() || {};
             renderProduk('Semua');
@@ -183,6 +183,7 @@
             document.getElementById('judul-section').innerText = kat === 'Semua' ? 'Produk Terbaru' : 'Kategori ' + kat;
             renderProduk(kat);
         };
+        
         window.hapusProduk = (id) => { if(confirm("Hapus?")) remove(ref(db, 'products/' + id)); };
     </script>
 </body>
