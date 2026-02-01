@@ -18,101 +18,72 @@
 <body class="flex justify-center">
 
     <div class="w-full max-w-[480px] min-h-screen bg-white shadow-lg relative content-wrapper">
-        <header class="bg-green-600 p-4 text-white sticky top-0 z-10 flex items-center gap-4 shadow-md">
+        <header class="bg-green-600 p-4 text-white sticky top-0 z-50 flex items-center gap-4 shadow-md">
             <a href="index.html"><i class="fas fa-arrow-left text-xl"></i></a>
-            <h1 class="text-xl font-bold">Mulai Jualan</h1>
+            <h1 class="text-xl font-bold italic uppercase">Mulai Jualan</h1>
         </header>
 
-        <div id="login-section" class="p-6 text-center space-y-6 hidden">
-            <div class="bg-green-50 p-6 rounded-3xl">
-                <i class="fas fa-store text-5xl text-green-600 mb-4"></i>
-                <h2 class="text-xl font-bold text-gray-800">Mau Jualan, Lur?</h2>
-                <p class="text-gray-600 text-sm">Pilih cara masuk yang paling gampang:</p>
-            </div>
-
-            <button onclick="loginGoogle()" class="w-full flex items-center justify-center gap-3 bg-white border-2 border-gray-200 py-4 rounded-2xl font-bold text-gray-700 shadow-sm hover:bg-gray-50 transition-all">
-                <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" width="20">
-                Masuk pakai Google
-            </button>
-
-            <div class="relative flex py-2 items-center">
-                <div class="flex-grow border-t border-gray-300"></div>
-                <span class="flex-shrink mx-4 text-gray-400 text-xs uppercase font-bold">Atau</span>
-                <div class="flex-grow border-t border-gray-300"></div>
-            </div>
-
-            <div class="bg-white border-2 border-green-500 p-5 rounded-2xl shadow-sm space-y-3">
-                <p class="text-sm font-bold text-green-700 italic">"Cara gampang nggo wong tua"</p>
-                <input type="number" id="inputLoginWa" placeholder="Masukkan No. WA (Contoh: 085xxx)" class="w-full p-3 border rounded-xl outline-none focus:border-green-500 text-center font-bold text-lg">
-                <button onclick="loginManualWA()" class="w-full bg-green-600 text-white font-bold py-3 rounded-xl hover:bg-green-700 transition">
-                    Masuk Pakai Nomor WA
-                </button>
-            </div>
-        </div>
-
-        <form id="formJual" class="p-6 space-y-5 hidden">
-            <div class="flex items-center justify-between bg-gray-50 p-3 rounded-xl border border-gray-100">
+        <form id="formJual" class="p-6 space-y-5">
+            <div class="flex items-center justify-between bg-gray-50 p-3 rounded-2xl border border-gray-100">
                 <div class="flex items-center gap-2">
-                    <img id="user-photo" class="w-8 h-8 rounded-full border border-green-500" src="https://cdn-icons-png.flaticon.com/512/149/149071.png">
-                    <span id="user-name" class="text-sm font-bold text-gray-700"></span>
+                    <div class="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center text-green-600 font-bold">
+                        <i class="fas fa-user text-sm"></i>
+                    </div>
+                    <span id="user-name" class="text-sm font-bold text-gray-700 italic">Memuat akun...</span>
                 </div>
-                <button type="button" onclick="logout()" class="text-xs text-red-500 font-bold">Logout</button>
+                <a href="profil.html" class="text-[10px] bg-white border px-3 py-1 rounded-full font-black text-green-600 uppercase">Profil</a>
             </div>
 
             <div class="space-y-2">
-                <label class="block text-sm font-black text-gray-700">Foto Produk (Wajib)</label>
-                <div onclick="document.getElementById('inputFoto').click()" class="w-full h-48 border-2 border-dashed border-green-400 rounded-2xl bg-green-50 flex flex-col items-center justify-center cursor-pointer overflow-hidden relative">
+                <label class="block text-[10px] font-black text-gray-400 uppercase tracking-widest">Foto Produk</label>
+                <div onclick="document.getElementById('inputFoto').click()" class="w-full h-52 border-2 border-dashed border-green-300 rounded-3xl bg-green-50 flex flex-col items-center justify-center cursor-pointer overflow-hidden relative">
                     <img id="previewImage" class="absolute inset-0 w-full h-full object-cover hidden">
-                    <div id="placeholderFoto" class="text-center p-4">
-                        <div class="bg-white p-3 rounded-full shadow-sm inline-block mb-2">
-                            <i class="fas fa-camera text-2xl text-green-600"></i>
-                        </div>
-                        <p class="text-xs text-green-700 font-bold">Tambah Foto Barang</p>
+                    <div id="placeholderFoto" class="text-center">
+                        <i class="fas fa-camera text-4xl text-green-400 mb-2"></i>
+                        <p class="text-[10px] text-green-600 font-bold uppercase">Klik nggo milih foto</p>
                     </div>
                 </div>
                 <input type="file" id="inputFoto" accept="image/*" class="hidden">
             </div>
 
-            <div>
-                <label class="block text-sm font-bold text-gray-700 mb-1">Nama Barang</label>
-                <input type="text" id="nama" required placeholder="Mendoan Anget" class="w-full p-3 rounded-xl border border-gray-300 outline-none focus:border-green-500">
-            </div>
-
-            <div>
-                <label class="block text-sm font-bold text-gray-700 mb-1">Harga (Rp)</label>
-                <input type="number" id="harga" required placeholder="5000" class="w-full p-3 rounded-xl border border-gray-300 outline-none focus:border-green-500">
-            </div>
-
-            <div class="grid grid-cols-2 gap-3">
+            <div class="grid grid-cols-1 gap-4">
                 <div>
-                    <label class="block text-sm font-bold text-gray-700 mb-1">Kategori</label>
-                    <select id="kategori" class="w-full p-3 rounded-xl border border-gray-300 bg-white">
-                        <option>Kuliner</option><option>Elektronik</option><option>Fashion</option>
-                        <option>Otomotif</option><option>Tani</option><option>Jasa</option><option>Lainnya</option>
+                    <label class="block text-[10px] font-black text-gray-400 mb-1 uppercase tracking-widest">Nama Barang</label>
+                    <input type="text" id="nama_barang" required placeholder="Contoh: Mendoan Warmindo" class="w-full p-4 bg-gray-50 border-none rounded-2xl focus:ring-2 focus:ring-green-500 font-bold outline-none">
+                </div>
+                <div>
+                    <label class="block text-[10px] font-black text-gray-400 mb-1 uppercase tracking-widest">Harga (Rp)</label>
+                    <input type="number" id="harga_barang" required placeholder="5000" class="w-full p-4 bg-gray-50 border-none rounded-2xl focus:ring-2 focus:ring-green-500 font-bold outline-none">
+                </div>
+            </div>
+
+            <div class="grid grid-cols-2 gap-4">
+                <div>
+                    <label class="block text-[10px] font-black text-gray-400 mb-1 uppercase tracking-widest text-center">Desa</label>
+                    <select id="desa" required class="w-full p-4 bg-gray-50 border-none rounded-2xl font-bold outline-none text-sm">
+                        <option value="">Pilih--</option>
+                        <option>Banjarharjo</option><option>Bandungsari</option><option>Malahayu</option>
+                        <option>Cigadung</option><option>Pende</option><option>Sindangheula</option>
+                        <option>Cikuya</option><option>Parereja</option><option>Kertasari</option>
                     </select>
                 </div>
                 <div>
-                    <label class="block text-sm font-bold text-gray-700 mb-1">Pilih Desa</label>
-                    <select id="desa" required class="w-full p-3 rounded-xl border border-gray-300 bg-white">
-                        <option value="">-- Pilih --</option>
-                        <option>Banjarharjo</option><option>Bandungsari</option><option>Blandongan</option>
-                        <option>Ciawi</option><option>Cihaur</option><option>Cigadung</option>
-                        <option>Cikakak</option><option>Cikuya</option><option>Cimunding</option>
-                        <option>Cisereuh</option><option>Cipajang</option><option>Dukuh jeruk</option>
-                        <option>Karangmaja</option><option>Kertasari</option><option>Kubangjero</option>
-                        <option>Malahayu</option><option>Parereja</option><option>Penanggapan</option>
-                        <option>Pende</option><option>Sindangheula</option><option>Sukareja</option>
-                        <option>Tegalreja</option><option>Tiwulandu</option>
+                    <label class="block text-[10px] font-black text-gray-400 mb-1 uppercase tracking-widest text-center">Kategori</label>
+                    <select id="kategori" class="w-full p-4 bg-gray-50 border-none rounded-2xl font-bold outline-none text-sm">
+                        <option>Kuliner</option><option>Tani</option><option>Fashion</option><option>Jasa</option><option>Lainnya</option>
                     </select>
                 </div>
             </div>
 
             <div>
-                <label class="block text-sm font-bold text-gray-700 mb-1">Nomor WhatsApp</label>
-                <input type="number" id="wa" required placeholder="6285xxx" class="w-full p-3 rounded-xl border border-gray-300 outline-none focus:border-green-500">
+                <label class="block text-[10px] font-black text-gray-400 mb-1 uppercase tracking-widest">WhatsApp</label>
+                <div class="relative">
+                    <span class="absolute left-4 top-4 font-bold text-gray-400">+62</span>
+                    <input type="number" id="wa" required placeholder="8123xxx" class="w-full p-4 pl-14 bg-gray-50 border-none rounded-2xl font-bold outline-none">
+                </div>
             </div>
 
-            <button type="submit" id="btnSubmit" class="w-full bg-green-600 text-white font-black py-4 rounded-2xl shadow-lg active:scale-95 transition-all text-lg">
+            <button type="submit" id="btnSubmit" class="w-full bg-green-600 text-white font-black py-5 rounded-3xl shadow-lg active:scale-95 transition-all text-sm uppercase italic tracking-widest">
                 TAYANGKAN IKLAN
             </button>
         </form>
@@ -130,107 +101,78 @@
         const auth = firebase.auth();
         const db = firebase.database();
 
-        function loginGoogle() {
-            const provider = new firebase.auth.GoogleAuthProvider();
-            auth.signInWithRedirect(provider);
-        }
-
-        function loginManualWA() {
-            const noWa = document.getElementById('inputLoginWa').value;
-            if (noWa.length < 10) return alert("Nomor WA sing bener, Lur!");
-            localStorage.setItem('user_wa_manual', noWa);
-            location.reload();
-        }
-
-        function logout() {
-            if(confirm("Metu saiki, Lur?")) {
-                auth.signOut().then(() => {
-                    localStorage.removeItem('user_wa_manual');
-                    location.reload();
-                });
-            }
-        }
-
+        // 1. CEK LOGIN
         auth.onAuthStateChanged(user => {
-            const loginSection = document.getElementById('login-section');
-            const formJual = document.getElementById('formJual');
-            const waManual = localStorage.getItem('user_wa_manual');
-            
-            if (user || waManual) {
-                loginSection.classList.add('hidden');
-                formJual.classList.remove('hidden');
-                if(user) {
-                    document.getElementById('user-name').innerText = user.displayName;
-                    document.getElementById('user-photo').src = user.photoURL;
-                } else {
-                    document.getElementById('user-name').innerText = "Warga (via WA)";
-                    document.getElementById('wa').value = waManual;
-                }
+            const namaLocal = localStorage.getItem('user_nama');
+            const waLocal = localStorage.getItem('user_wa');
+
+            if (!user && !namaLocal) {
+                window.location.href = "login.html";
             } else {
-                loginSection.classList.remove('hidden');
-                formJual.classList.add('hidden');
+                document.getElementById('user-name').innerText = user ? user.displayName : namaLocal;
+                if(waLocal) {
+                    // Masukkan angka belakangnya saja ke input (buang 62 atau 0 di depan)
+                    document.getElementById('wa').value = waLocal.replace(/^62|^0/, '');
+                }
             }
         });
 
+        // 2. FOTO HANDLER
         let base64Image = "";
         document.getElementById('inputFoto').addEventListener('change', function(e) {
             const file = e.target.files[0];
-            if (file) {
-                const reader = new FileReader();
-                reader.onload = function(event) {
-                    const img = new Image();
-                    img.src = event.target.result;
-                    img.onload = function() {
-                        const canvas = document.createElement('canvas');
-                        const MAX_SIZE = 500;
-                        let width = img.width;
-                        let height = img.height;
-                        if (width > height) {
-                            if (width > MAX_SIZE) { height *= MAX_SIZE / width; width = MAX_SIZE; }
-                        } else {
-                            if (height > MAX_SIZE) { width *= MAX_SIZE / height; height = MAX_SIZE; }
-                        }
-                        canvas.width = width;
-                        canvas.height = height;
-                        const ctx = canvas.getContext('2d');
-                        ctx.drawImage(img, 0, 0, width, height);
-                        base64Image = canvas.toDataURL('image/jpeg', 0.7);
-                        document.getElementById('previewImage').src = base64Image;
-                        document.getElementById('previewImage').classList.remove('hidden');
-                        document.getElementById('placeholderFoto').classList.add('hidden');
-                    };
+            const reader = new FileReader();
+            reader.onload = function(event) {
+                const img = new Image();
+                img.src = event.target.result;
+                img.onload = function() {
+                    const canvas = document.createElement('canvas');
+                    const MAX = 600;
+                    let w = img.width;
+                    let h = img.height;
+                    if (w > h) { if (w > MAX) { h *= MAX/w; w = MAX; } }
+                    else { if (h > MAX) { w *= MAX/h; h = MAX; } }
+                    canvas.width = w; canvas.height = h;
+                    canvas.getContext('2d').drawImage(img, 0, 0, w, h);
+                    base64Image = canvas.toDataURL('image/jpeg', 0.7);
+                    document.getElementById('previewImage').src = base64Image;
+                    document.getElementById('previewImage').classList.remove('hidden');
+                    document.getElementById('placeholderFoto').classList.add('hidden');
                 };
-                reader.readAsDataURL(file);
-            }
+            };
+            reader.readAsDataURL(file);
         });
 
+        // 3. SUBMIT IKLAN
         document.getElementById('formJual').addEventListener('submit', function(e) {
             e.preventDefault();
             if(!base64Image) return alert("Fotoné dipasang dhisit!");
+            
             const btn = document.getElementById('btnSubmit');
             btn.disabled = true;
-            btn.innerHTML = `<i class="fas fa-spinner fa-spin"></i> NGIRIM...`;
+            btn.innerHTML = "SEDANG MENGIRIM...";
 
-            const user = auth.currentUser;
+            // Bersihkan WA jadi 628...
+            let rawWa = document.getElementById('wa').value.replace(/^0+|^62|^\+/, '');
+            let waFinal = "62" + rawWa;
+
             db.ref('products').push({
-                nama: document.getElementById('nama').value,
-                harga: document.getElementById('harga').value,
+                nama: document.getElementById('nama_barang').value,
+                harga: document.getElementById('harga_barang').value,
                 kategori: document.getElementById('kategori').value,
                 desa: document.getElementById('desa').value,
-                wa: document.getElementById('wa').value,
+                wa: waFinal,
                 foto: base64Image,
-                penjual: user ? user.displayName : "Warga Banjarharjo",
-                email: user ? user.email : "via-wa",
+                penjual: document.getElementById('user-name').innerText,
                 timestamp: Date.now()
             }).then(() => {
-                alert("Mantap! Dagangan sampeyan wis tayang.");
+                alert("MANTAP! Dagangan wis tayang.");
                 window.location.href = "index.html";
             }).catch(err => {
                 alert("Gagal: " + err.message);
                 btn.disabled = false;
-                btn.innerText = "TAYANGKAN IKLAN";
+                btn.innerHTML = "TAYANGKAN IKLAN";
             });
         });
     </script>
 </body>
-</html>
