@@ -3,127 +3,103 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin Iklan - Lapak Banjarharjo</title>
+    <title>Admin Iklan - Lapak</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <script src="https://ucarecdn.com/libs/widget/3.x/uploadcare.full.min.js"></script>
 </head>
-<body class="bg-gray-100 flex justify-center">
-    <div class="w-full max-w-[480px] min-h-screen bg-white p-6 shadow-lg">
-        
-        <header class="mb-8 flex items-center justify-between border-b pb-4">
-             <div class="flex items-center gap-3">
-                <div class="w-10 h-10 bg-green-600 rounded-xl flex items-center justify-center text-white shadow-md">
-                    <i class="fas fa-bullhorn text-lg"></i>
-                </div>
-                <div>
-                    <h1 class="text-lg font-black text-gray-800 uppercase italic">Update Banner</h1>
-                    <p class="text-[9px] text-gray-400 font-bold uppercase tracking-widest">Admin Lapak Banjarharjo</p>
-                </div>
-             </div>
-             <a href="index.html" class="text-gray-400 hover:text-green-600"><i class="fas fa-home text-xl"></i></a>
-        </header>
+<body class="bg-gray-100 p-5 flex justify-center">
 
-        <div class="space-y-8">
-            <div class="p-5 border border-gray-100 rounded-3xl bg-gray-50 shadow-sm relative">
-                <label class="block font-black text-[10px] mb-3 text-green-600 uppercase tracking-widest">Iklan Atas (Slide 1)</label>
-                <input type="file" id="file1" accept="image/*" class="text-xs mb-4 block w-full font-bold text-gray-500">
-                <input type="number" id="link1" placeholder="WA (Contoh: 856...)" class="w-full p-4 bg-white rounded-2xl text-sm mb-4 focus:ring-2 focus:ring-green-500 font-bold outline-none border-none shadow-inner">
-                
-                <div class="flex gap-2">
-                    <button onclick="prosesUpload(1)" id="btn1" class="flex-1 bg-green-600 text-white font-black py-4 rounded-2xl text-xs uppercase italic active:scale-95 transition-all">Update</button>
-                    <button onclick="hapusIklan(1)" class="px-5 bg-red-100 text-red-600 rounded-2xl hover:bg-red-200 transition-all shadow-sm">
-                        <i class="fas fa-trash-alt"></i>
-                    </button>
-                </div>
+    <div class="w-full max-w-md bg-white rounded-3xl shadow-xl p-6">
+        <h1 class="text-2xl font-black text-green-600 mb-6">Kelola Iklan Slider</h1>
+
+        <div class="space-y-4">
+            <div class="bg-green-50 p-4 rounded-2xl border-2 border-dashed border-green-200 text-center">
+                <p class="text-xs font-bold text-green-700 mb-3">UPLOAD GAMBAR IKLAN (800x400 px)</p>
+                <input type="hidden" role="uploadcare-uploader" id="uploadcare-file" 
+                       data-public-key="demopublickey" data-tabs="file camera url">
             </div>
 
-            <div class="p-5 border border-gray-100 rounded-3xl bg-gray-50 shadow-sm relative">
-                <label class="block font-black text-[10px] mb-3 text-blue-600 uppercase tracking-widest">Iklan Bawah (Slide 2)</label>
-                <input type="file" id="file2" accept="image/*" class="text-xs mb-4 block w-full font-bold text-gray-500">
-                <input type="number" id="link2" placeholder="WA (Contoh: 856...)" class="w-full p-4 bg-white rounded-2xl text-sm mb-4 focus:ring-2 focus:ring-blue-500 font-bold outline-none border-none shadow-inner">
-                
-                <div class="flex gap-2">
-                    <button onclick="prosesUpload(2)" id="btn2" class="flex-1 bg-gray-800 text-white font-black py-4 rounded-2xl text-xs uppercase italic active:scale-95 transition-all">Update</button>
-                    <button onclick="hapusIklan(2)" class="px-5 bg-red-100 text-red-600 rounded-2xl hover:bg-red-200 transition-all shadow-sm">
-                        <i class="fas fa-trash-alt"></i>
-                    </button>
-                </div>
+            <div>
+                <label class="text-[10px] font-bold text-gray-400 ml-2">NOMOR WA (Contoh: 6285xxx)</label>
+                <input type="number" id="wa-link" placeholder="628..." 
+                       class="w-full p-3 rounded-xl border mt-1 focus:ring-2 focus:ring-green-500 outline-none">
             </div>
+
+            <button id="btn-update" class="w-full bg-green-600 text-white font-bold py-4 rounded-2xl shadow-lg active:scale-95 transition">
+                UPDATE IKLAN SEKARANG
+            </button>
         </div>
 
-        <div class="mt-10 p-4 border border-yellow-100 bg-yellow-50 rounded-2xl">
-            <p class="text-[10px] text-yellow-700 font-bold italic leading-relaxed">
-                <i class="fas fa-info-circle mr-1"></i> Iklan sing wis tayang bakal awet terus, Lur. Ora bakal ilang dewek kecuali sampeyan klik tombol sampah (hapus).
-            </p>
+        <hr class="my-8">
+        <h2 class="font-bold text-gray-500 mb-4">Iklan Saat Ini:</h2>
+        <div id="preview-list" class="space-y-3">
+            <p class="text-xs italic text-gray-400 text-center">Mengecek data...</p>
         </div>
-
     </div>
 
-    <script>
-        const DB_URL = "https://lapak-banjarharjo-default-rtdb.asia-southeast1.firebasedatabase.app/ads/";
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+        import { getDatabase, ref, set, onValue, remove } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
 
-        // FUNGSI UPDATE / UPLOAD
-        async function prosesUpload(id) {
-            const fileInput = document.getElementById('file' + id);
-            const linkInput = document.getElementById('link' + id);
-            const btn = document.getElementById('btn' + id);
-            
-            if (!fileInput.files[0]) return alert("Pilih fotoné dhisit, Lur!");
+        const firebaseConfig = {
+            apiKey: "AIzaSyAowYbcfC9RsMCxKf2ZmwvTiLvooKaWI5U",
+            databaseURL: "https://lapak-banjarharjo-default-rtdb.asia-southeast1.firebasedatabase.app",
+            projectId: "lapak-banjarharjo"
+        };
 
-            const originalText = btn.innerText;
-            btn.innerText = "⏳ PROSES...";
-            btn.disabled = true;
+        const app = initializeApp(firebaseConfig);
+        const db = getDatabase(app);
+        const widget = uploadcare.Widget('#uploadcare-file');
 
-            let rawWa = linkInput.value.toString().replace(/^0+|^62|^\+/, '');
-            let waFinal = "62" + (rawWa || "85647087424");
+        // SIMPAN DATA KE FIREBASE
+        document.getElementById('btn-update').onclick = () => {
+            const fileGroup = widget.value();
+            const wa = document.getElementById('wa-link').value;
 
-            const formData = new FormData();
-            formData.append("UPLOADCARE_PUB_KEY", "42ca74f25177b5dc4dd3");
-            formData.append("UPLOADCARE_STORE", "1");
-            formData.append("file", fileInput.files[0]);
+            if(!fileGroup || !wa) return alert("Upload gambar & isi WA dulu, Lur!");
 
-            try {
-                const resImg = await fetch("https://upload.uploadcare.com/base/", { method: "POST", body: formData });
-                const dataImg = await resImg.json();
+            // Ambil link asli, lalu bersihkan
+            fileGroup.done((info) => {
+                const rawUrl = info.cdnUrl;
+                // Kita buat ID unik pakai waktu
+                const adId = "slide_" + Date.now();
 
-                if (dataImg.file) {
-                    const finalUrl = "https://ucarecdn.com/" + dataImg.file + "/";
-                    
-                    const resDb = await fetch(`${DB_URL}slide${id}.json`, {
-                        method: "PUT",
-                        body: JSON.stringify({ url: finalUrl, link: waFinal })
-                    });
-
-                    if (resDb.ok) {
-                        alert("✅ MANTAP! Iklan " + id + " wis ganti.");
-                        location.reload();
-                    }
-                }
-            } catch (err) {
-                alert("❌ GAGAL: " + err.message);
-            } finally {
-                btn.innerText = originalText;
-                btn.disabled = false;
-            }
-        }
-
-        // FUNGSI HAPUS IKLAN
-        async function hapusIklan(id) {
-            if(!confirm("Iklan slide " + id + " pan dihapus, yakin Lur?")) return;
-
-            try {
-                const res = await fetch(`${DB_URL}slide${id}.json`, {
-                    method: "DELETE"
-                });
-
-                if(res.ok) {
-                    alert("✅ Iklan wis dikosongna.");
+                set(ref(db, 'ads/' + adId), {
+                    url: rawUrl,
+                    link: wa
+                }).then(() => {
+                    alert("Iklan Berhasil Tayang!");
                     location.reload();
-                }
-            } catch (err) {
-                alert("❌ Gagal mbusak: " + err.message);
+                });
+            });
+        };
+
+        // TAMPILKAN DAFTAR IKLAN YANG ADA
+        onValue(ref(db, 'ads'), (snap) => {
+            const data = snap.val();
+            const list = document.getElementById('preview-list');
+            list.innerHTML = "";
+            
+            if(data) {
+                Object.keys(data).forEach(key => {
+                    const item = data[key];
+                    list.innerHTML += `
+                        <div class="flex items-center gap-3 bg-gray-50 p-2 rounded-xl border">
+                            <img src="${item.url}-/preview/100x50/" class="w-16 h-10 object-cover rounded-lg">
+                            <div class="flex-1 text-[10px] font-bold truncate">${item.link}</div>
+                            <button onclick="hapusIklan('${key}')" class="text-red-500 p-2"><i class="fas fa-trash"></i> Hapus</button>
+                        </div>`;
+                });
+            } else {
+                list.innerHTML = "<p class='text-center text-xs text-gray-400'>Kosong.</p>";
             }
-        }
+        });
+
+        window.hapusIklan = (id) => {
+            if(confirm("Hapus iklan ini?")) {
+                remove(ref(db, 'ads/' + id));
+            }
+        };
     </script>
 </body>
 </html>
